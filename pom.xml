@@ -85,6 +85,7 @@
     </dependencyManagement>
 
     <build>
+        <finalName>emperors</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
