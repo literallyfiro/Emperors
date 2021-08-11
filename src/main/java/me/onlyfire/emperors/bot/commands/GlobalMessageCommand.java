@@ -2,6 +2,7 @@ package me.onlyfire.emperors.bot.commands;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
+import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
 import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.user.impl.EmperorUserCreation;
 import me.onlyfire.emperors.utils.MemberUtils;
@@ -30,19 +31,20 @@ public class GlobalMessageCommand extends MessagedBotCommand {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableHtml(true);
         sendMessage.setDisableWebPagePreview(true);
-        sendMessage.setChatId(String.valueOf(chat.getId()));
-        sendMessage.setText("Inviato un messaggio globale a tutti i gruppi!");
-        try {
-            absSender.executeAsync(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+//        sendMessage.setChatId(String.valueOf(chat.getId()));
+//        sendMessage.setText("Inviato un messaggio globale a tutti i gruppi!");
+//        try {
+//            absSender.execute(sendMessage);
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//        }
 
         sendMessage.setText("\uD83D\uDCAD <b>Messaggio globale:</b> " + String.join(" ", strings));
-        for (Chat chats : emperorsBot.getChats()) {
-            sendMessage.setChatId(String.valueOf(chats.getId()));
+        for (MongoGroup mongoGroup : emperorsBot.getMongoDatabase().getAllMongoGroups()) {
+            System.out.println("DEBUG ## " + mongoGroup.getGroupId() + " - " + mongoGroup.getName());
+            sendMessage.setChatId(String.valueOf(mongoGroup.getGroupId()));
             try {
-                absSender.executeAsync(sendMessage);
+                absSender.execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }

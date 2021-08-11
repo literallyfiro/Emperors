@@ -3,17 +3,12 @@ package me.onlyfire.emperors.bot.listener.impl;
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.exceptions.EmperorException;
 import me.onlyfire.emperors.bot.listener.BotListener;
-import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
-import me.onlyfire.emperors.bot.mongo.models.MongoEmperor;
-import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
 import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.user.impl.EmperorUserCreation;
 import me.onlyfire.emperors.utils.MemberUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -29,7 +24,7 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
         var chat = message.getChat();
         var groupId = String.valueOf(message.getChatId());
         var user = message.getFrom();
-        if (!MemberUtils.isAdministrator(sender, user, chat))
+        if (MemberUtils.isNormalUser(sender, user, chat))
             return;
 
         SendMessage sendMessage = new SendMessage();

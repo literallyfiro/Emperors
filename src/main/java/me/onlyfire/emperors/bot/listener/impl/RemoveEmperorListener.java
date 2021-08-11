@@ -29,7 +29,7 @@ public record RemoveEmperorListener(EmperorsBot emperorsBot) implements BotListe
         Chat chat = message.getChat();
         String groupId = String.valueOf(message.getChatId());
         User user = message.getFrom();
-        if (!MemberUtils.isAdministrator(sender, user, chat))
+        if (MemberUtils.isNormalUser(sender, user, chat))
             return;
 
         SendMessage sendMessage = new SendMessage();

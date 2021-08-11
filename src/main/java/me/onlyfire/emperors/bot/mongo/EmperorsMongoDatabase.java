@@ -20,6 +20,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.eq;
@@ -47,21 +49,20 @@ public class EmperorsMongoDatabase {
         suggestionsCollection = database.getCollection("suggestions", MongoSuggestion.class);
     }
 
-    public void registerGroup(Message message) {
-        if (message == null) return;
-        Chat chat = message.getChat();
+    public void registerGroup(Chat chat) {
+        if (chat == null) return;
+        if (chat.isUserChat()) return;
         MongoGroup loadedGroup = groupsCollection.find(eq("group_id", chat.getId())).first();
         if (loadedGroup != null) return;
 
         MongoGroup newMongoGroup = new MongoGroup();
         newMongoGroup.setGroupId(chat.getId());
-        newMongoGroup.setName(chat.getFirstName());
+        newMongoGroup.setName(chat.getTitle());
         groupsCollection.insertOne(newMongoGroup);
     }
 
-    public void registerUser(Message message) {
-        if (message == null) return;
-        User user = message.getFrom();
+    public void registerUser(User user) {
+        if (user == null) return;
         MongoUser loadedUser = usersCollection.find(eq("user_id", user.getId())).first();
         if (loadedUser != null) return;
 
@@ -123,11 +124,24 @@ public class EmperorsMongoDatabase {
         return getTakenEmperor(user, chat, emperor) != null;
     }
 
+    public boolean isEmperorTaken(@NotNull MongoUser mongoUser, @NotNull Chat chat, @NotNull MongoEmperor emperor) {
+        return getTakenEmperor(mongoUser, chat, emperor) != null;
+    }
+
     public MongoTakenEmperor getTakenEmperor(@NotNull User user, @NotNull Chat chat, @NotNull MongoEmperor emperor) {
         MongoUser loadedUser = getMongoUser(user);
         if (loadedUser == null) throw new EmperorException("Loaded user is non existent");
 
         for (MongoTakenEmperor takenEmperor : loadedUser.getEmperorsTaken()) {
+            if (takenEmperor.getGroupId().equals(chat.getId()) && takenEmperor.getName().equalsIgnoreCase(emperor.getName())) {
+                return takenEmperor;
+            }
+        }
+        return null;
+    }
+
+    public MongoTakenEmperor getTakenEmperor(@NotNull MongoUser mongoUser, @NotNull Chat chat, @NotNull MongoEmperor emperor) {
+        for (MongoTakenEmperor takenEmperor : mongoUser.getEmperorsTaken()) {
             if (takenEmperor.getGroupId().equals(chat.getId()) && takenEmperor.getName().equalsIgnoreCase(emperor.getName())) {
                 return takenEmperor;
             }
@@ -183,12 +197,12 @@ public class EmperorsMongoDatabase {
         return usersCollection.find(eq("user_id", user.getId())).first();
     }
 
-    public MongoCursor<MongoGroup> getAllMongoGroups() {
-        return groupsCollection.find().cursor();
+    public List<MongoGroup> getAllMongoGroups() {
+        return groupsCollection.find().into(new ArrayList<>());
     }
 
-    public MongoCursor<MongoUser> getAllMongoUsers() {
-        return usersCollection.find().cursor();
+    public List<MongoUser> getAllMongoUsers() {
+        return usersCollection.find().into(new ArrayList<>());
     }
 
     public void close() {

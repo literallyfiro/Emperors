@@ -40,7 +40,6 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
 
     private final Logger logger = LoggerFactory.getLogger("EmperorsBot");
     private final Map<User, EmperorUserMode> userMode = new HashMap<>();
-    private final List<Chat> chats = new ArrayList<>();
 
     public EmperorsBot(BotVars botVars) {
         this.botVars = botVars;
@@ -80,11 +79,10 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
     @Override
     public void processNonCommandUpdate(Update update) {
         Message message = update.getMessage();
-        if (message != null && !chats.contains(message.getChat())) chats.add(message.getChat());
-
-        mongoDatabase.registerGroup(message);
-        mongoDatabase.registerUser(message);
-
+        if (message != null) {
+            mongoDatabase.registerGroup(message.getChat());
+            mongoDatabase.registerUser(message.getFrom());
+        }
         listenerManager.executeUpdate(update, this);
     }
 

@@ -3,6 +3,7 @@ package me.onlyfire.emperors.utils;
 @SuppressWarnings("unused")
 public enum Emoji {
 
+    PARTY('\uD83C', '\uDF89'),
     THINKING('\uD83E', '\uDD14'),
     CROWN('\uD83D', '\uDC51'),
     TECHNOLOGIST("\uD83D\uDC68\u200D\uD83D\uDCBB"),

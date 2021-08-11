@@ -22,7 +22,7 @@ public class CancelCommand extends MessagedBotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Message message, Chat chat, String[] strings) {
-        if (!MemberUtils.isAdministrator(absSender, user, chat))
+        if (MemberUtils.isNormalUser(absSender, user, chat))
             return;
 
         if (emperorsBot.getUserMode().containsKey(user)) {

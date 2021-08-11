@@ -43,7 +43,7 @@ public record AdminPanelListener(EmperorsBot emperorsBot) implements BotListener
                 EditMessageText editMessageText = new EditMessageText();
                 editMessageText.setChatId(String.valueOf(update.getCallbackQuery().getMessage().getChatId()));
                 editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
-                editMessageText.setText("❌ Inviata richiesta di stop al server. entro 3 secondi il bot si interromperà...");
+                editMessageText.setText("☑️ Inviata richiesta di stop al server. entro 3 secondi il bot si interromperà...");
                 try {
                     sender.execute(editMessageText);
                 } catch (TelegramApiException e) {
@@ -81,13 +81,13 @@ public record AdminPanelListener(EmperorsBot emperorsBot) implements BotListener
                 EditMessageText editMessageText = new EditMessageText();
                 editMessageText.setChatId(String.valueOf(update.getCallbackQuery().getMessage().getChatId()));
                 editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
-                editMessageText.setText("❌ Inviata richiesta di riavvio al server. entro 3 secondi il bot si riavvierà...");
+                editMessageText.setText("☑️ Inviata richiesta di riavvio al server. entro 3 secondi il bot si riavvierà...");
                 try {
                     sender.executeAsync(editMessageText);
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-                emperorsBot.handleStopAction(update.getCallbackQuery().getFrom(), StopAction.STOP);
+                emperorsBot.handleStopAction(update.getCallbackQuery().getFrom(), StopAction.RESTART);
             }
         }
     }

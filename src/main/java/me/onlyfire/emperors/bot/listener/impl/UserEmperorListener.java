@@ -7,6 +7,7 @@ import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
 import me.onlyfire.emperors.bot.mongo.models.MongoEmperor;
 import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
 import me.onlyfire.emperors.bot.mongo.models.MongoTakenEmperor;
+import me.onlyfire.emperors.bot.mongo.models.MongoUser;
 import me.onlyfire.emperors.essential.Language;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -39,10 +40,10 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
 
         EmperorsMongoDatabase database = emperorsBot.getMongoDatabase();
         MongoGroup mongoGroup = database.getMongoGroup(chat);
+        MongoEmperor mongoEmperor = database.getEmperorByName(chat, message.getText());
+
         if (mongoGroup == null)
             throw new EmperorException("Could not fetch group id " + groupId);
-
-        MongoEmperor mongoEmperor = database.getEmperorByName(chat, message.getText());
         if (mongoEmperor == null)
             return;
 
@@ -57,13 +58,20 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
                 }
                 return;
             }
-            sendMessage.setText(String.format(Language.ALREADY_HAS_EMPEROR.toString(), takenEmperor.getTakenByName(), takenEmperor.getName()));
-            try {
-                sender.execute(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+        }
+        for (MongoUser mongoUser : database.getAllMongoUsers()) {
+            if (database.isEmperorTaken(mongoUser, chat, mongoEmperor)) {
+                MongoTakenEmperor takenEmperor = database.getTakenEmperor(mongoUser, chat, mongoEmperor);
+
+                sendMessage.setText(String.format(Language.ALREADY_HAS_EMPEROR.toString(),
+                        takenEmperor.getTakenByName(), takenEmperor.getName()));
+                try {
+                    sender.execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+                return;
             }
-            return;
         }
 
         long processingTime = database.takeEmperor(user, chat, mongoEmperor);
