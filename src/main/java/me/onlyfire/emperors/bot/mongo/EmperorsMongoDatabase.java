@@ -131,6 +131,31 @@ public class EmperorsMongoDatabase {
     }
 
     @Nullable
+    public MongoTakenEmperor getTakenEmperor(@NotNull MongoUser user, @NotNull MongoGroup chat, @NotNull MongoEmperor emperor) {
+        for (MongoTakenEmperor takenEmperor : user.getEmperorsTaken()) {
+            if (takenEmperor.getGroupId().equals(chat.getGroupId()) && takenEmperor.getName().equalsIgnoreCase(emperor.getName())) {
+                return takenEmperor;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public void emitEmperor(@NotNull MongoUser user, @NotNull MongoGroup chat, @NotNull MongoEmperor mongoEmperor) {
+        MongoTakenEmperor takenEmperor = getTakenEmperor(user, chat, mongoEmperor);
+        if (takenEmperor == null) throw new EmperorException("Loaded emperor is non existent");
+
+        user.getEmperorsTaken().remove(takenEmperor);
+
+        int index = chat.getEmperors().indexOf(mongoEmperor);
+        mongoEmperor.setTaken(false);
+        chat.getEmperors().set(index, mongoEmperor);
+
+        updateUser(user);
+        updateGroup(chat);
+    }
+
+    @Nullable
     public MongoTakenEmperor getTakenEmperor(@NotNull MongoUser mongoUser, @NotNull Chat chat, @NotNull MongoEmperor emperor) {
         for (MongoTakenEmperor takenEmperor : mongoUser.getEmperorsTaken()) {
             if (takenEmperor.getGroupId().equals(chat.getId()) && takenEmperor.getName().equalsIgnoreCase(emperor.getName())) {
