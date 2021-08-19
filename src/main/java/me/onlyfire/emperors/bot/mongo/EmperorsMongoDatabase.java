@@ -117,17 +117,7 @@ public class EmperorsMongoDatabase {
         return (System.currentTimeMillis() - before);
     }
 
-    public boolean isEmperorTaken(@NotNull User user, @NotNull Chat chat, @NotNull MongoEmperor emperor) {
-        MongoUser loadedUser = getMongoUser(user);
-        if (loadedUser == null) throw new EmperorException("Loaded user is non existent");
-
-        return getTakenEmperor(user, chat, emperor) != null;
-    }
-
-    public boolean isEmperorTaken(@NotNull MongoUser mongoUser, @NotNull Chat chat, @NotNull MongoEmperor emperor) {
-        return getTakenEmperor(mongoUser, chat, emperor) != null;
-    }
-
+    @Nullable
     public MongoTakenEmperor getTakenEmperor(@NotNull User user, @NotNull Chat chat, @NotNull MongoEmperor emperor) {
         MongoUser loadedUser = getMongoUser(user);
         if (loadedUser == null) throw new EmperorException("Loaded user is non existent");
@@ -140,6 +130,7 @@ public class EmperorsMongoDatabase {
         return null;
     }
 
+    @Nullable
     public MongoTakenEmperor getTakenEmperor(@NotNull MongoUser mongoUser, @NotNull Chat chat, @NotNull MongoEmperor emperor) {
         for (MongoTakenEmperor takenEmperor : mongoUser.getEmperorsTaken()) {
             if (takenEmperor.getGroupId().equals(chat.getId()) && takenEmperor.getName().equalsIgnoreCase(emperor.getName())) {

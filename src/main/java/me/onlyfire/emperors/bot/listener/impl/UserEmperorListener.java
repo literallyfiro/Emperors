@@ -47,30 +47,31 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
         if (mongoEmperor == null)
             return;
 
-        if (database.isEmperorTaken(user, chat, mongoEmperor)) {
-            MongoTakenEmperor takenEmperor = database.getTakenEmperor(user, chat, mongoEmperor);
-            if (takenEmperor.getTakenById().equals(user.getId())) {
-                sendMessage.setText(Language.ALREADY_HAS_EMPEROR_SELF.toString());
-                try {
-                    sender.execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-                return;
-            }
-        }
-        for (MongoUser mongoUser : database.getAllMongoUsers()) {
-            if (database.isEmperorTaken(mongoUser, chat, mongoEmperor)) {
-                MongoTakenEmperor takenEmperor = database.getTakenEmperor(mongoUser, chat, mongoEmperor);
+        var takenEmperor = database.getTakenEmperor(user, chat, mongoEmperor);
+        if (takenEmperor == null)
+            return;
 
-                sendMessage.setText(String.format(Language.ALREADY_HAS_EMPEROR.toString(),
-                        takenEmperor.getTakenByName(), takenEmperor.getName()));
-                try {
-                    sender.execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+        if (takenEmperor.getTakenById().equals(user.getId())) {
+            sendMessage.setText(Language.ALREADY_HAS_EMPEROR_SELF.toString());
+            try {
+                sender.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        for (MongoUser mongoUsers : database.getAllMongoUsers()) {
+            MongoTakenEmperor takenEmperors = database.getTakenEmperor(mongoUsers, chat, mongoEmperor);
+            if (takenEmperors == null)
                 return;
+
+            sendMessage.setText(String.format(Language.ALREADY_HAS_EMPEROR.toString(),
+                    takenEmperors.getTakenByName(), takenEmperors.getName()));
+            try {
+                sender.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
             }
         }
 
