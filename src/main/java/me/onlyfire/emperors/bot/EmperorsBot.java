@@ -14,7 +14,6 @@ import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.essential.StopAction;
 import me.onlyfire.emperors.tasks.EmperorClearTask;
 import me.onlyfire.emperors.user.EmperorUserMode;
-import org.apache.commons.lang3.arch.Processor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
