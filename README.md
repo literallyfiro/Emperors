@@ -4,6 +4,7 @@ Inspired from @ReUnicoRebornBot concept and @RePaperaBot, Emperors is a new way 
 
 [![uwu](https://forthebadge.com/images/badges/gluten-free.svg)](https://forthebadge.com)
 [![owo](https://forthebadge.com/images/badges/contains-cat-gifs.svg)](https://forthebadge.com)
+[![microsoft java](badge/made-with-java-uwu.svg)](https://forthebadge.com)
 
 ## 🎉 Create your own emperors
 
