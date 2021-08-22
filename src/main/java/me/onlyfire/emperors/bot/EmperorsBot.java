@@ -6,7 +6,6 @@ import me.onlyfire.emperors.bot.exceptions.EmperorException;
 import me.onlyfire.emperors.bot.listener.ListenerManager;
 import me.onlyfire.emperors.bot.listener.impl.AddEmperorListener;
 import me.onlyfire.emperors.bot.listener.impl.AdminPanelListener;
-import me.onlyfire.emperors.bot.listener.impl.RemoveEmperorListener;
 import me.onlyfire.emperors.bot.listener.impl.UserEmperorListener;
 import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
 import me.onlyfire.emperors.essential.BotVars;
@@ -14,7 +13,6 @@ import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.essential.StopAction;
 import me.onlyfire.emperors.tasks.EmperorClearTask;
 import me.onlyfire.emperors.user.EmperorUserMode;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
@@ -25,6 +23,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -60,7 +60,6 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
 
         this.listenerManager = new ListenerManager();
         this.listenerManager.addListener(new AddEmperorListener(this));
-        this.listenerManager.addListener(new RemoveEmperorListener(this));
         this.listenerManager.addListener(new UserEmperorListener(this));
         this.listenerManager.addListener(new AdminPanelListener(this));
 
@@ -115,7 +114,7 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         }
 
         logger.error("There was an error during Emperors_BOT run. Code ID: " + errorCode);
-        String error = ExceptionUtils.getStackTrace(throwable).replace("at ", "-> ");
+        String error = getStackTrace(throwable);
         logger.error(error);
 
         /* *********************************************************** */
@@ -128,7 +127,7 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
             execute(sendMessage);
 
             if (throwable.getCause() != null) {
-                String cause = ExceptionUtils.getStackTrace(throwable.getCause()).replace("at ", "-> ");
+                String cause = getStackTrace(throwable.getCause());
                 sendMessage.setText("Cause: <code>" + cause + "</code>");
             }
 
@@ -148,6 +147,13 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         return "#" + sb;
     }
 
+    private String getStackTrace(Throwable throwable) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw, true);
+        throwable.printStackTrace(pw);
+        return sw.getBuffer().toString().replace("at ", "-> ");
+    }
+
     public void handleStopAction(User user, StopAction action) {
         logger.info("Received a stop request from " + user.getFirstName() + " [" + user.getId() + "]");
         logger.info("Stopping the bot in 3 seconds...");
@@ -159,6 +165,4 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         logger.info("Closing threads and stopping the JVM, bye bye");
         System.exit(action == StopAction.STOP ? 0 : 100);
     }
-
-
 }

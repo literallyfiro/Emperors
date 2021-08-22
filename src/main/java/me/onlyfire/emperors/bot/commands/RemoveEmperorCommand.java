@@ -2,14 +2,16 @@ package me.onlyfire.emperors.bot.commands;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
+import me.onlyfire.emperors.bot.exceptions.EmperorException;
+import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
+import me.onlyfire.emperors.bot.mongo.models.MongoEmperor;
+import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
 import me.onlyfire.emperors.essential.Language;
-import me.onlyfire.emperors.user.impl.EmperorUserRemoval;
 import me.onlyfire.emperors.utils.MemberUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -30,35 +32,51 @@ public class RemoveEmperorCommand extends MessagedBotCommand {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableHtml(true);
         sendMessage.setChatId(String.valueOf(chat.getId()));
-        sendMessage.setDisableWebPagePreview(true);
         sendMessage.setReplyToMessageId(message.getMessageId());
 
-        if (emperorsBot.getUserMode().containsKey(user)) {
+        if (emperorsBot.getUserMode().containsKey(user))
             emperorsBot.removeUserMode(user, chat, null);
-            sendMessage.setText("Sei stato rimosso dalla precedente sessione.");
+
+        if (strings.length == 0) {
+            sendMessage.setText("<b>Utilizzo corretto del comando: </b> <code>/removeemperor (nome re)</code>\n" +
+                    "Utilizza <code>/listemperors</code> per avere la lista degli imperatori disponibili");
             try {
                 absSender.execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
+            return;
         }
 
-        sendMessage.setText(Language.REMOVE_EMPEROR_FIRST_STEP.toString());
-        ForceReplyKeyboard kb = ForceReplyKeyboard
-                .builder()
-                .inputFieldPlaceholder("Inserisci un nome")
-                .forceReply(true)
-                .selective(true)
-                .build();
-        sendMessage.setReplyMarkup(kb);
+        String emperorName = String.join(" ", strings)
+                .replace(strings[0] + " ", "").toLowerCase();
 
-        EmperorUserRemoval emperorUserRemoval = new EmperorUserRemoval(emperorsBot, absSender, user, chat, message);
+        EmperorsMongoDatabase database = emperorsBot.getMongoDatabase();
+        MongoGroup mongoGroup = database.getMongoGroup(chat);
+        if (mongoGroup == null)
+            throw new EmperorException("Could not fetch group id " + message.getChatId());
+
+        MongoEmperor mongoEmperor = database.getEmperorByName(chat, emperorName);
+        if (mongoEmperor == null) {
+            sendMessage.setText(Language.NOT_EXIST_EMPEROR.toString());
+            try {
+                absSender.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        sendMessage.setText(String.format(Language.REMOVED_EMPEROR_SUCCESSFULLY.toString(), emperorName));
+        long processingTime = database.deleteEmperor(chat, mongoEmperor);
+        String joining = "Removed emperor %s on group %s (Familiar name: %s). Took %sms for completion.";
+        emperorsBot.getLogger().info(String.format(joining, emperorName, chat.getId(), chat.getTitle(), processingTime));
+
         try {
-            emperorsBot.getUserMode().put(user, emperorUserRemoval);
-            emperorUserRemoval.start();
             absSender.execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
+
 }

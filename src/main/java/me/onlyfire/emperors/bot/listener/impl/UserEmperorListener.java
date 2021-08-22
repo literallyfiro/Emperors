@@ -7,7 +7,6 @@ import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
 import me.onlyfire.emperors.bot.mongo.models.MongoEmperor;
 import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
 import me.onlyfire.emperors.bot.mongo.models.MongoTakenEmperor;
-import me.onlyfire.emperors.bot.mongo.models.MongoUser;
 import me.onlyfire.emperors.essential.Language;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -32,6 +31,8 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
 
         if (emperorsBot.getUserMode().containsKey(user))
             return;
+        if (!message.hasText())
+            return;
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableHtml(true);
@@ -47,32 +48,17 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
         if (mongoEmperor == null)
             return;
 
-        var takenEmperor = database.getTakenEmperor(user, chat, mongoEmperor);
-        if (takenEmperor == null)
-            return;
+        MongoTakenEmperor takenEmperor = database.getTakenEmperor(chat, mongoEmperor);
 
-        if (takenEmperor.getTakenById().equals(user.getId())) {
-            sendMessage.setText(Language.ALREADY_HAS_EMPEROR_SELF.toString());
+        if (takenEmperor != null) {
+            sendMessage.setText(takenEmperor.getTakenById().equals(user.getId()) ? Language.ALREADY_HAS_EMPEROR_SELF.toString()
+                    : String.format(Language.ALREADY_HAS_EMPEROR.toString(), takenEmperor.getTakenByName(), takenEmperor.getName()));
             try {
                 sender.execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
             return;
-        }
-
-        for (MongoUser mongoUsers : database.getAllMongoUsers()) {
-            MongoTakenEmperor takenEmperors = database.getTakenEmperor(mongoUsers, chat, mongoEmperor);
-            if (takenEmperors == null)
-                return;
-
-            sendMessage.setText(String.format(Language.ALREADY_HAS_EMPEROR.toString(),
-                    takenEmperors.getTakenByName(), takenEmperors.getName()));
-            try {
-                sender.execute(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
         }
 
         long processingTime = database.takeEmperor(user, chat, mongoEmperor);
@@ -89,5 +75,6 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+
     }
 }

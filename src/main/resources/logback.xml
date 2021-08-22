@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <timestamp key="DAY" datePattern="yyyy-MM-dd-HH-mm-ss"/>
-    <timestamp key="DAY_TRIM" datePattern="HH:mm:ss"/>
-
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>DEBUG</level>
+    <property name="HOME_LOG" value="logs/latest.log"/>
+    <appender name="console-info" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
         </filter>
-        <withJansi>false</withJansi>
-        <encoder>
-            <pattern>[ ${DAY_TRIM} | %highlight(%-5level)]: %msg%n</pattern>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%gray([%d{HH:mm:ss}]) %gray(%-5level) - %white(%msg) %n</pattern>
         </encoder>
     </appender>
-
-    <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/log-${DAY}.log</file>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/pp.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxFileSize>3MB</maxFileSize>
-            <totalSizeCap>20GB</totalSizeCap>>
-            <maxHistory>60</maxHistory>
+    <appender name="console-warn" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%yellow([%d{HH:mm:ss}]) %yellow(%-5level) - %yellow(%msg) %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="console-error" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%red([%d{HH:mm:ss}]) %red(%-5level) - %red(%msg) %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${HOME_LOG}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/log.%d{dd-MM-yyyy}_%d{HH:mm:ss,aux}.log</fileNamePattern>
+            <TimeBasedFileNamingAndTriggeringPolicy class="me.onlyfire.emperors.policy.StartupTimeBasedTriggeringPolicy" />
         </rollingPolicy>
-
         <encoder>
             <pattern>%d %p %c{1.} [%t] %m%n</pattern>
         </encoder>
     </appender>
-
-    <logger name="debugger" level="debug" additivity="false">
-        <appender-ref ref="FILE-ROLLING"/>
-    </logger>
-
     <root level="info">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE-ROLLING"/>
+        <appender-ref ref="console-info"/>
+        <appender-ref ref="console-warn"/>
+        <appender-ref ref="console-error"/>
+        <appender-ref ref="file"/>
     </root>
-
 </configuration>
