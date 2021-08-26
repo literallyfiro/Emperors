@@ -1,12 +1,9 @@
 package me.onlyfire.emperors.bot.listener.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
-import me.onlyfire.emperors.bot.exceptions.EmperorException;
 import me.onlyfire.emperors.bot.listener.BotListener;
-import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
-import me.onlyfire.emperors.bot.mongo.models.MongoEmperor;
-import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
-import me.onlyfire.emperors.bot.mongo.models.MongoTakenEmperor;
+import me.onlyfire.emperors.database.Emperor;
+import me.onlyfire.emperors.database.EmperorsDatabase;
 import me.onlyfire.emperors.essential.Language;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -26,12 +23,11 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
             return;
 
         Chat chat = message.getChat();
-        String groupId = String.valueOf(message.getChatId());
         User user = message.getFrom();
 
-        if (emperorsBot.getUserMode().containsKey(user))
-            return;
         if (!message.hasText())
+            return;
+        if (emperorsBot.getUserMode().containsKey(user))
             return;
 
         SendMessage sendMessage = new SendMessage();
@@ -39,42 +35,32 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
         sendMessage.setChatId(String.valueOf(chat.getId()));
         sendMessage.setReplyToMessageId(message.getMessageId());
 
-        EmperorsMongoDatabase database = emperorsBot.getMongoDatabase();
-        MongoGroup mongoGroup = database.getMongoGroup(chat);
-        MongoEmperor mongoEmperor = database.getEmperorByName(chat, message.getText());
-
-        if (mongoGroup == null)
-            throw new EmperorException("Could not fetch group id " + groupId);
-        if (mongoEmperor == null)
-            return;
-
-        MongoTakenEmperor takenEmperor = database.getTakenEmperor(chat, mongoEmperor);
-
-        if (takenEmperor != null) {
-            sendMessage.setText(takenEmperor.getTakenById().equals(user.getId()) ? Language.ALREADY_HAS_EMPEROR_SELF.toString()
-                    : String.format(Language.ALREADY_HAS_EMPEROR.toString(), takenEmperor.getTakenByName(), takenEmperor.getName()));
+        EmperorsDatabase database = emperorsBot.getDatabase();
+        database.getEmperor(message.getChatId(), message.getText().toLowerCase()).whenComplete((emperor, exception) -> {
+            if (emperor == null) return;
+            if (emperor.getTakenByName() == null || emperor.getTakenTime() == 0L) {
+                sendMessage.setText(takeEmperor(user, chat, message, emperor));
+            } else {
+                sendMessage.setText(emperor.getTakenById() == user.getId() ? Language.ALREADY_HAS_EMPEROR_SELF.toString()
+                        : String.format(Language.ALREADY_HAS_EMPEROR.toString(), emperor.getTakenByName(), emperor.getName()));
+            }
             try {
                 sender.execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-            return;
-        }
+        });
 
-        long processingTime = database.takeEmperor(user, chat, mongoEmperor);
+    }
+
+    public String takeEmperor(User user, Chat chat, Message message, Emperor emperor) {
+        long processingTime = emperorsBot.getDatabase().takeEmperor(user, chat, message.getText());
         String joining = "Set %s (Familiar name: %s) new emperor - %s - of group %s (Familiar name: %s). Took %sms.";
         emperorsBot.getLogger().info(String.format(joining, user.getId(),
                 user.getUserName() != null ? user.getFirstName() + " | @" + user.getUserName() : user.getFirstName(),
-                mongoEmperor.getName(), groupId, chat.getTitle(), processingTime));
+                message.getText(), message.getChatId(), chat.getTitle(), processingTime));
 
-        String photoUrl = "https://imgur.com/" + mongoEmperor.getPhotoId() + ".png";
-        sendMessage.setText(String.format(Language.NEW_EMPEROR_OF_DAY.toString(),
-                photoUrl, user.getFirstName(), mongoEmperor.getName()));
-        try {
-            sender.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-
+        String photoUrl = "https://imgur.com/" + emperor.getPhotoId() + ".png";
+        return String.format(Language.NEW_EMPEROR_OF_DAY.toString(), photoUrl, user.getFirstName(), emperor.getName());
     }
 }

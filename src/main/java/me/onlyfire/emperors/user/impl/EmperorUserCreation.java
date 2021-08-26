@@ -2,8 +2,6 @@ package me.onlyfire.emperors.user.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.exceptions.EmperorException;
-import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
-import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
 import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.user.EmperorUserMode;
 import me.onlyfire.emperors.utils.Downloader;
@@ -30,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class EmperorUserCreation extends EmperorUserMode {
@@ -39,6 +38,8 @@ public class EmperorUserCreation extends EmperorUserMode {
     private final User user;
     private final Chat chat;
     private final Instant instThen;
+
+    private final Object lock = new Object();
 
     private final String PHOTO_TEMPLATE = "cache" + File.separator + "%s.jpg";
 
@@ -52,7 +53,7 @@ public class EmperorUserCreation extends EmperorUserMode {
     }
 
     @Override
-    public void runCheck() {
+    public boolean runCheck() {
         Instant now = Instant.now();
         Duration duration = Duration.between(instThen, now);
         long seconds = duration.getSeconds();
@@ -70,8 +71,9 @@ public class EmperorUserCreation extends EmperorUserMode {
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-            stop();
+            return false;
         }
+        return true;
     }
 
     public void completed(Message updatedMessage, String newEmperorName) {
@@ -88,7 +90,6 @@ public class EmperorUserCreation extends EmperorUserMode {
                     emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante l'invio a Imgur (API Offline?)", throwable));
                     return;
                 }
-
                 SendMessage sendMessage = new SendMessage();
                 sendMessage.enableHtml(true);
                 sendMessage.setChatId(String.valueOf(chat.getId()));
@@ -98,21 +99,22 @@ public class EmperorUserCreation extends EmperorUserMode {
                 String photoId = data.getString("id");
                 sendMessage.setText(String.format(Language.ADDED_EMPEROR_SUCCESSFULLY.toString(), newEmperorName));
 
-                EmperorsMongoDatabase database = emperorsBot.getMongoDatabase();
-                MongoGroup mongoGroup = database.getMongoGroup(chat);
-                if (mongoGroup == null)
-                    throw new EmperorException("Could not fetch group id " + chat.getId());
+                CompletableFuture<Integer> processing = emperorsBot.getDatabase().createEmperor(chat, newEmperorName, photoId);
+                processing.whenComplete(((integer, exception) -> {
+                    if (exception != null) {
+                        emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante l'inserimento del record", exception));
+                        return;
+                    }
+                    String joining = "Created emperor %s on group %s (Familiar name: %s).";
+                    emperorsBot.getLogger().info(String.format(joining, newEmperorName, chat.getId(), chat.getTitle()));
+                    try {
+                        sender.execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                    emperorsBot.removeUserMode(user, chat, null);
+                }));
 
-                long processingTime = database.createEmperor(chat, newEmperorName, photoId);
-                emperorsBot.removeUserMode(user, chat, null);
-
-                String joining = "Created emperor %s on group %s (Familiar name: %s). Took %sms for completion.";
-                emperorsBot.getLogger().info(String.format(joining, newEmperorName, chat.getId(), chat.getTitle(), processingTime));
-                try {
-                    sender.execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
             });
         } catch (TelegramApiException | IOException | IllegalArgumentException e) {
             emperorsBot.removeUserMode(user, chat, new EmperorException("Errore generale di creazione", e));

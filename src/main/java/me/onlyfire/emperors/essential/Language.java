@@ -12,9 +12,6 @@ public enum Language {
             Fai <code>/cancel</code> per annullare questa operazione
             """
     ),
-
-    NEW_EMPEROR_OF_DAY("<a href=\"%s\">&#8205</a>" + Emoji.PARTY + " ||• <b>Congratulazioni</b> %s •|| " + Emoji.PARTY + "\n\n" + "➥ Sei il nuovo imperatore <code>%s</code> di oggi!"),
-
     GENERAL_ERROR("<b>Non è stato possibile eseguire la tua azione!</b> " + Emoji.CRYING_FACE +
             "\n" +
             "<i>Mi dispiace averti disturbato, ma c'è stato un problema tecnico nel bot! Molto probabilmente (anzi, sicuramente) questo errore è stato generato per via dell'incapacità dello sviluppatore nel controllare le exceptions in java.</i>\n" +
@@ -25,7 +22,6 @@ public enum Language {
             "\n" +
             "<b>MESSAGE:</b> <code>%s</code>"
     ),
-
     ERROR_EMPEROR_CREATION_LOG("""
             <b>Hey Hey Hey! Nuovo bug, altro fix!</b>
 
@@ -35,11 +31,13 @@ public enum Language {
                 - <b>Chat ID:</b> <code>%s</code>
                 - <b>Error Code:</b> <code>%s</code>
                         
-            Di sotto troverai l'exception tirata dal bot, muoviti a fixarmi :(
+            Qui troverai l'exception tirata dal bot, muoviti a fixarmi :(
             """
     ),
 
     /* Simple messages */
+    NEW_EMPEROR_OF_DAY("<a href=\"%s\">&#8205</a>" + Emoji.PARTY + " ||• <b>Congratulazioni</b> %s •|| " +
+            Emoji.PARTY + "\n\n" + "➥ Sei il nuovo imperatore <code>%s</code> di oggi!"),
     REMOVE_EMPEROR_FIRST_STEP("Rispondi a questo messaggio con il nome dell'imperatore che vuoi eliminare"),
     ADDED_EMPEROR_SUCCESSFULLY("Complimenti, l'imperatore <code>%s</code> è ora disponibile a tutti gli utenti!"),
     ALREADY_HAS_EMPEROR(Emoji.CRYING_FACE + " <b>Mi dispiace!</b> %s ha già preso il posto di re <code>%s</code>!"),
@@ -48,6 +46,7 @@ public enum Language {
     CREATION_IN_PROGRESS(Emoji.TECHNOLOGIST + "Il tuo imperatore è ora in fase di creazione, questa operazione potrà richiedere qualche minuto."),
     ALREADY_EXIST_EMPEROR(Emoji.HEAVY_MULTIPLICATION_X + " Esiste già un imperatore con questo nome!"),
     REMOVED_EMPEROR_SUCCESSFULLY("L'imperatore <code>%s</code> è stato rimosso dal gruppo!"),
+    THERE_ARE_NO_EMPERORS("<b>Non ci sono imperatori in questo gruppo!</b> " + Emoji.CRYING_FACE),
     NOT_EXIST_EMPEROR(Emoji.HEAVY_MULTIPLICATION_X + " Non esiste un imperatore con questo nome!");
 
     String language;

@@ -7,7 +7,7 @@ import me.onlyfire.emperors.bot.listener.ListenerManager;
 import me.onlyfire.emperors.bot.listener.impl.AddEmperorListener;
 import me.onlyfire.emperors.bot.listener.impl.AdminPanelListener;
 import me.onlyfire.emperors.bot.listener.impl.UserEmperorListener;
-import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
+import me.onlyfire.emperors.database.EmperorsDatabase;
 import me.onlyfire.emperors.essential.BotVars;
 import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.essential.StopAction;
@@ -16,18 +16,16 @@ import me.onlyfire.emperors.user.EmperorUserMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,16 +34,17 @@ import java.util.concurrent.TimeUnit;
 public class EmperorsBot extends TelegramLongPollingCommandBot {
 
     private final BotVars botVars;
-    private final ListenerManager listenerManager;
-    private final EmperorsMongoDatabase mongoDatabase;
 
+    private final ListenerManager listenerManager = new ListenerManager();
+    private final EmperorsDatabase database = new EmperorsDatabase(this);
     private final Logger logger = LoggerFactory.getLogger("EmperorsBot");
     private final Map<User, EmperorUserMode> userMode = new HashMap<>();
+    private final List<Long> chats = new ArrayList<>();
 
     public EmperorsBot(BotVars botVars) {
         this.botVars = botVars;
-        this.mongoDatabase = new EmperorsMongoDatabase();
-        mongoDatabase.connect(botVars.uri());
+
+        database.connect(botVars.uri());
 
         ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutor.scheduleAtFixedRate(new EmperorClearTask(this), 0, 1, TimeUnit.SECONDS);
@@ -58,15 +57,11 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         register(new StartCommand());
         register(new AdminCommand());
 
-        this.listenerManager = new ListenerManager();
         this.listenerManager.addListener(new AddEmperorListener(this));
         this.listenerManager.addListener(new UserEmperorListener(this));
         this.listenerManager.addListener(new AdminPanelListener(this));
 
-        Runtime.getRuntime().addShutdownHook(new Thread(mongoDatabase::close));
-
-//        Trello trelloApi = new TrelloImpl(botVars.trelloKey(), botVars.trelloAccessToken(), new AsyncTrelloHttpClient2());
-//        this.trelloBoard = trelloApi.getBoard("Emperors");
+        Runtime.getRuntime().addShutdownHook(new Thread(database::close));
 
         logger.info("Successfully started.");
     }
@@ -78,11 +73,8 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        Message message = update.getMessage();
-        if (message != null) {
-            mongoDatabase.registerGroup(message.getChat());
-            mongoDatabase.registerUser(message.getFrom());
-        }
+        Chat chat = update.getMessage().getChat();
+        if (!chats.contains(chat.getId())) chats.add(chat.getId());
         listenerManager.executeUpdate(update, this);
     }
 
@@ -113,28 +105,46 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
             e.printStackTrace();
         }
 
-        logger.error("There was an error during Emperors_BOT run. Code ID: " + errorCode);
-        String error = getStackTrace(throwable);
-        logger.error(error);
-
         /* *********************************************************** */
-        sendMessage.setChatId(String.valueOf(339169693));
+        String error = getStackTrace(throwable);
+        File file = generateFile(error, errorCode);
 
+        logger.error("There was an error during Emperors_BOT run. Code ID: " + errorCode);
+        logger.error("Error file has been saved to " + file.getPath());
+
+        SendDocument sendDocument = new SendDocument();
+        sendDocument.setDocument(new InputFile(file));
+        sendDocument.setChatId(String.valueOf(339169693));
+        sendDocument.setCaption(String.format(Language.ERROR_EMPEROR_CREATION_LOG.toString(), chat.getId()));
         try {
-            sendMessage.setText(String.format(Language.ERROR_EMPEROR_CREATION_LOG.toString(), chat.getId(), errorCode));
             execute(sendMessage);
-            sendMessage.setText("<code>" + error + "</code>");
-            execute(sendMessage);
-
-            if (throwable.getCause() != null) {
-                String cause = getStackTrace(throwable.getCause());
-                sendMessage.setText("Cause: <code>" + cause + "</code>");
-            }
-
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
         /* *********************************************************** */
+    }
+
+    private File generateFile(String error, String errorCode) {
+        File file = new File("error_" + errorCode + ".txt");
+        FileOutputStream fos = null;
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            file.createNewFile();
+            fos = new FileOutputStream(file, true);
+            byte[] b= error.getBytes();
+            fos.write(b);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
     }
 
     private String generateErrorCode() {

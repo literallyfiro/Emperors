@@ -23,7 +23,7 @@ public class Bot {
         Properties props = loadProperties();
 
         BotVars botVars = new BotVars(props.getProperty("token"), props.getProperty("username"),
-                props.getProperty("mongodb_uri"), props.getProperty("trelloKey"), props.getProperty("trelloAccessToken"), props.getProperty("imgur"));
+                props.getProperty("uri"), props.getProperty("trelloKey"), props.getProperty("trelloAccessToken"), props.getProperty("imgur"));
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         File file = new File("cache");

@@ -3,12 +3,15 @@ package me.onlyfire.emperors.bot.listener.impl;
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.exceptions.EmperorException;
 import me.onlyfire.emperors.bot.listener.BotListener;
+import me.onlyfire.emperors.database.EmperorsDatabase;
 import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.user.impl.EmperorUserCreation;
 import me.onlyfire.emperors.utils.MemberUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -21,9 +24,8 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
         if (message == null)
             return;
 
-        var chat = message.getChat();
-        var groupId = String.valueOf(message.getChatId());
-        var user = message.getFrom();
+        Chat chat = message.getChat();
+        User user = message.getFrom();
         if (MemberUtils.isNormalUser(sender, user, chat))
             return;
 
@@ -49,31 +51,20 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
             if (!message.hasDocument() || message.getCaption() == null || message.getCaption().isEmpty())
                 return;
 
-            var emperorName = message.getCaption().toLowerCase();
-            var database = emperorsBot().getMongoDatabase();
-            var mongoGroup = database.getMongoGroup(chat);
-            if (mongoGroup == null)
-                throw new EmperorException("Could not fetch group id " + groupId);
-
-            var mongoEmperor = database.getEmperorByName(chat, emperorName);
-            if (mongoEmperor != null) {
-                sendMessage.setText(Language.ALREADY_EXIST_EMPEROR.toString());
+            String emperorName = message.getCaption().toLowerCase();
+            EmperorsDatabase database = emperorsBot.getDatabase();
+            database.getEmperor(message.getChatId(), emperorName).whenComplete((emperor, exception) -> {
+                sendMessage.setText(emperor == null ? Language.CREATION_IN_PROGRESS.toString() : Language.ALREADY_EXIST_EMPEROR.toString());
                 try {
                     sender.executeAsync(sendMessage);
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-                emperorsBot.removeUserMode(user, chat, null);
-                return;
-            }
 
-            sendMessage.setText(Language.CREATION_IN_PROGRESS.toString());
-            try {
-                sender.executeAsync(sendMessage);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-            emperorUserCreation.completed(message, emperorName);
+                if (emperor == null) emperorUserCreation.completed(message, emperorName);
+                else emperorsBot.removeUserMode(user, chat, null);
+            });
+
         }
     }
 }

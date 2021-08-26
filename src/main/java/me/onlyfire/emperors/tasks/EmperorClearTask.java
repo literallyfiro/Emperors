@@ -1,30 +1,21 @@
 package me.onlyfire.emperors.tasks;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
-import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
-import me.onlyfire.emperors.bot.mongo.models.MongoEmperor;
-import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
-import me.onlyfire.emperors.bot.mongo.models.MongoTakenEmperor;
-import me.onlyfire.emperors.bot.mongo.models.MongoUser;
+import me.onlyfire.emperors.database.Emperor;
+import me.onlyfire.emperors.database.EmperorsDatabase;
 
 public record EmperorClearTask(EmperorsBot emperorsBot) implements Runnable {
 
     @Override
     public void run() {
-        EmperorsMongoDatabase database = emperorsBot.getMongoDatabase();
-
-        for (MongoGroup group : database.getAllMongoGroups()) {
-            for (MongoEmperor emperor : group.getEmperors()) {
-                for (MongoUser users : database.getAllMongoUsers()) {
-                    for (MongoTakenEmperor takenEmperor : users.getEmperorsTaken()) {
-                        if (takenEmperor.getTakenTime() < (System.currentTimeMillis() / 1000)) {
-                            database.emitEmperor(users, group, emperor);
-                        }
-                    }
+        EmperorsDatabase database = emperorsBot.getDatabase();
+        database.getEmperors().whenComplete((emperors, throwable) -> {
+            for (Emperor emperor : emperors) {
+                if (emperor.getTakenTime() < (System.currentTimeMillis() / 1000)) {
+                    database.emitEmperor(emperor);
                 }
             }
-        }
-
+        });
     }
 
 }

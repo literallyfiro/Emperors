@@ -26,14 +26,18 @@ public abstract class EmperorUserMode {
 
     public void start() {
         scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutor.scheduleAtFixedRate(this::runCheck, 0, 1, TimeUnit.SECONDS);
+        scheduledExecutor.scheduleAtFixedRate(() -> {
+            if (!runCheck()) {
+                scheduledExecutor.shutdown();
+            }
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void stop() {
         scheduledExecutor.shutdown();
     }
 
-    public abstract void runCheck();
+    public abstract boolean runCheck();
 
     public abstract void completed(Message updatedMessage, String emperorName);
 }

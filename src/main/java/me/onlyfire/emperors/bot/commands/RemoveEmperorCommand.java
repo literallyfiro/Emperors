@@ -3,9 +3,7 @@ package me.onlyfire.emperors.bot.commands;
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
 import me.onlyfire.emperors.bot.exceptions.EmperorException;
-import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
-import me.onlyfire.emperors.bot.mongo.models.MongoEmperor;
-import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
+import me.onlyfire.emperors.database.EmperorsDatabase;
 import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.utils.MemberUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -48,35 +46,32 @@ public class RemoveEmperorCommand extends MessagedBotCommand {
             return;
         }
 
-        String emperorName = String.join(" ", strings)
-                .replace(strings[0] + " ", "").toLowerCase();
+        String emperorName = String.join(" ", strings).replace(strings[0] + " ", "").toLowerCase();
+        EmperorsDatabase database = emperorsBot.getDatabase();
 
-        EmperorsMongoDatabase database = emperorsBot.getMongoDatabase();
-        MongoGroup mongoGroup = database.getMongoGroup(chat);
-        if (mongoGroup == null)
-            throw new EmperorException("Could not fetch group id " + message.getChatId());
+        database.getEmperor(message.getChatId(), emperorName).whenComplete((emperor, exception) -> {
+            if (emperor == null) {
+                sendMessage.setText(Language.NOT_EXIST_EMPEROR.toString());
+                try {
+                    absSender.execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
 
-        MongoEmperor mongoEmperor = database.getEmperorByName(chat, emperorName);
-        if (mongoEmperor == null) {
-            sendMessage.setText(Language.NOT_EXIST_EMPEROR.toString());
+            sendMessage.setText(String.format(Language.REMOVED_EMPEROR_SUCCESSFULLY.toString(), emperorName));
+            long processingTime = database.deleteEmperor(emperorName, chat.getId());
+            String joining = "Removed emperor %s on group %s (Familiar name: %s). Took %sms for completion.";
+            emperorsBot.getLogger().info(String.format(joining, emperorName, chat.getId(), chat.getTitle(), processingTime));
+
             try {
                 absSender.execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-            return;
-        }
+        });
 
-        sendMessage.setText(String.format(Language.REMOVED_EMPEROR_SUCCESSFULLY.toString(), emperorName));
-        long processingTime = database.deleteEmperor(chat, mongoEmperor);
-        String joining = "Removed emperor %s on group %s (Familiar name: %s). Took %sms for completion.";
-        emperorsBot.getLogger().info(String.format(joining, emperorName, chat.getId(), chat.getTitle(), processingTime));
-
-        try {
-            absSender.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
     }
 
 }
