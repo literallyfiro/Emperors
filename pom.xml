@@ -43,9 +43,9 @@
             <version>21.0.1</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.25</version>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>2.7.4</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -63,27 +63,11 @@
             <version>1.2.5</version>
         </dependency>
         <dependency>
-            <groupId>com.taskadapter</groupId>
-            <artifactId>trello-java-wrapper</artifactId>
-            <version>0.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.asynchttpclient</groupId>
-            <artifactId>async-http-client</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.12.4</version>
         </dependency>
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.asynchttpclient</groupId>
-                <artifactId>async-http-client-bom</artifactId>
-                <version>2.12.3</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <finalName>emperors</finalName>

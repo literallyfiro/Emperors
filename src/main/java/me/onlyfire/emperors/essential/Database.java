@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Database {
 
-    private static final HikariDataSource hikari;
+    private static HikariDataSource hikari;
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private static final Map<String, String> PROPS = ImmutableMap.<String, String>builder()
@@ -53,14 +53,15 @@ public class Database {
     private static final long CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
     private static final long LEAK_DETECTION_THRESHOLD = TimeUnit.SECONDS.toMillis(60);
 
-    static {
+    public static void connect(String uri) {
         HikariConfig factory = new HikariConfig();
+        String[] split = uri.split(";");
 
-        factory.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        factory.setJdbcUrl(String.format("jdbc:%s://%s:%s/%s", "mysql", "127.0.0.1", "3306", "emperors_db"));
-        factory.setUsername("root");
-        factory.setPassword("***REMOVED***");
-        factory.setPoolName("emperors-pool");
+        factory.setDriverClassName("org.mariadb.jdbc.Driver");
+        factory.setJdbcUrl(String.format("jdbc:%s://%s:%s/%s", "mariadb", split[0], split[5], split[3]));
+        factory.setUsername(split[1]);
+        factory.setPassword(split[2]);
+        factory.setPoolName(split[4]);
 
         PROPS.forEach(factory::addDataSourceProperty);
         factory.setMaximumPoolSize(MAXIMUM_POOL_SIZE);

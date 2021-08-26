@@ -1,9 +1,5 @@
 package me.onlyfire.emperors.bot;
 
-import com.julienvey.trello.Trello;
-import com.julienvey.trello.domain.Board;
-import com.julienvey.trello.impl.TrelloImpl;
-import com.julienvey.trello.impl.http.AsyncTrelloHttpClient2;
 import me.onlyfire.emperors.bot.commands.*;
 import me.onlyfire.emperors.bot.exceptions.EmperorException;
 import me.onlyfire.emperors.bot.listener.ListenerManager;
@@ -40,7 +36,6 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
     public final List<Emperor> loadedEmperors;
     public final BotVars botVars;
     public final ListenerManager listenerManager;
-    public final Board trelloBoard;
 
     public final Logger LOGGER = LoggerFactory.getLogger("EmperorsBot");
     public final Map<User, EmperorUserMode> userMode = new HashMap<>();
@@ -67,9 +62,6 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
             LOGGER.info("Closing bot.");
             Database.close();
         }));
-
-        Trello trelloApi = new TrelloImpl(botVars.trelloKey(), botVars.trelloAccessToken(), new AsyncTrelloHttpClient2());
-        this.trelloBoard = trelloApi.getBoard("emperors");
 
         LOGGER.info("Successfully started.");
     }

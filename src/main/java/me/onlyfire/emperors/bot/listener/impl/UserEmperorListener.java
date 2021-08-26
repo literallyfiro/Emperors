@@ -2,11 +2,6 @@ package me.onlyfire.emperors.bot.listener.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.listener.BotListener;
-import me.onlyfire.emperors.bot.mongo.EmperorsMongoDatabase;
-import me.onlyfire.emperors.bot.mongo.models.MongoEmperor;
-import me.onlyfire.emperors.bot.mongo.models.MongoGroup;
-import me.onlyfire.emperors.bot.mongo.models.MongoTakenEmperor;
-import me.onlyfire.emperors.bot.mongo.models.MongoUser;
 import me.onlyfire.emperors.essential.Database;
 import me.onlyfire.emperors.essential.Language;
 import me.onlyfire.emperors.model.Emperor;
@@ -54,19 +49,6 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
 
                     String takenBy = String.valueOf(user.getId());
                     long takenTime = tomorrowDateTime.toEpochSecond();
-
-                    /*
-                    EmperorsMongoDatabase mongoDatabase = EmperorsMongoDatabase.getInstance();
-                    MongoUser mongoUser = mongoDatabase.getMongoUser(user);
-                    if (mongoUser != null) {
-                        MongoTakenEmperor takenEmperor = new MongoTakenEmperor();
-                        takenEmperor.setGroupId(Long.valueOf(groupId));
-                        takenEmperor.setName(message.getText());
-                        mongoUser.getEmperorsTaken().add(takenEmperor);
-
-                        mongoDatabase.updateUser(mongoUser);
-                    }
-                    */
 
                     CompletableFuture<Integer> future = Database.executeUpdate("UPDATE emperors SET takenBy = ?, takenByName = ?, takenTime = ? WHERE groupId = ? AND name = ?",
                             new Object[]{takenBy, user.getFirstName(), takenTime, groupId, message.getText()});
