@@ -24,7 +24,7 @@ public class RemoveEmperorCommand extends MessagedBotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Message message, Chat chat, String[] strings) {
-        if (chat.isUserChat() || !MemberUtils.isAdministrator(absSender, user, chat))
+        if (chat.isUserChat() || MemberUtils.isNormalUser(absSender, user, chat))
             return;
 
         SendMessage sendMessage = new SendMessage();

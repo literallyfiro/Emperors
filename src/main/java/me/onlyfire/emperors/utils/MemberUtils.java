@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @UtilityClass
 public final class MemberUtils {
 
-    public static boolean isAdministrator(AbsSender absSender, User user, Chat chat) {
+    public static boolean isNormalUser(AbsSender absSender, User user, Chat chat) {
         ChatMember member = getChatMember(absSender, user, chat);
 
         if (member == null)
