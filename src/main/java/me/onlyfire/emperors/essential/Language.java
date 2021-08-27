@@ -51,8 +51,8 @@ public enum Language {
 
     String language;
 
-    Language(String it) {
-        this.language = it;
+    Language(String lang) {
+        this.language = lang;
     }
 
     @Override

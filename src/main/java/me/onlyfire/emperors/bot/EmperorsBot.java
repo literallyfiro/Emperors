@@ -117,7 +117,7 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         sendDocument.setChatId(String.valueOf(339169693));
         sendDocument.setCaption(String.format(Language.ERROR_EMPEROR_CREATION_LOG.toString(), chat.getId()));
         try {
-            execute(sendMessage);
+            execute(sendDocument);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
