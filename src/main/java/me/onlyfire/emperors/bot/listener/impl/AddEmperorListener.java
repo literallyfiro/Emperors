@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021.
+ * The Emperors project is controlled by the GNU General Public License v3.0.
+ * You can find it in the LICENSE file on the GitHub repository.
+ */
+
 package me.onlyfire.emperors.bot.listener.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
@@ -54,6 +60,10 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
             String emperorName = message.getCaption().toLowerCase();
             EmperorsDatabase database = emperorsBot.getDatabase();
             database.getEmperor(message.getChatId(), emperorName).whenComplete((emperor, exception) -> {
+                if (exception != null) {
+                    emperorsBot.generateErrorMessage(chat, new EmperorException("Errore nel database", exception));
+                    return;
+                }
                 sendMessage.setText(emperor == null ? Language.CREATION_IN_PROGRESS.toString() : Language.ALREADY_EXIST_EMPEROR.toString());
                 try {
                     sender.executeAsync(sendMessage);

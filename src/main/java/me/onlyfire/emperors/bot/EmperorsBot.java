@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021.
+ * The Emperors project is controlled by the GNU General Public License v3.0.
+ * You can find it in the LICENSE file on the GitHub repository.
+ */
+
 package me.onlyfire.emperors.bot;
 
 import lombok.Getter;
@@ -44,7 +50,7 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
     public EmperorsBot(BotVars botVars) {
         this.botVars = botVars;
 
-        database.connect(botVars.uri());
+        database.connect(botVars.getUri());
 
         ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutor.scheduleAtFixedRate(new EmperorClearTask(this), 0, 1, TimeUnit.SECONDS);
@@ -68,7 +74,7 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
 
     @Override
     public String getBotUsername() {
-        return botVars.username();
+        return botVars.getUsername();
     }
 
     @Override
@@ -80,7 +86,7 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
 
     @Override
     public String getBotToken() {
-        return botVars.token();
+        return botVars.getToken();
     }
 
     public void removeUserMode(User user, Chat chat, EmperorException throwable) {

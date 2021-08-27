@@ -1,7 +1,14 @@
+/*
+ * Copyright (c) 2021.
+ * The Emperors project is controlled by the GNU General Public License v3.0.
+ * You can find it in the LICENSE file on the GitHub repository.
+ */
+
 package me.onlyfire.emperors.bot.commands;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
+import me.onlyfire.emperors.bot.exceptions.EmperorException;
 import me.onlyfire.emperors.database.Emperor;
 import me.onlyfire.emperors.database.EmperorsDatabase;
 import me.onlyfire.emperors.essential.Language;
@@ -35,7 +42,11 @@ public class ListEmperorsCommand extends MessagedBotCommand {
         sendMessage.setChatId(String.valueOf(chat.getId()));
 
         EmperorsDatabase database = emperorsBot.getDatabase();
-        database.getEmperors(chat.getId()).whenComplete(((emperors, throwable) -> {
+        database.getEmperors(chat.getId()).whenComplete(((emperors, exception) -> {
+            if (exception != null) {
+                emperorsBot.generateErrorMessage(chat, new EmperorException("Errore nel database", exception));
+                return;
+            }
             sendMessage.setText(emperors.isEmpty() ? Language.THERE_ARE_NO_EMPERORS.toString() : fetchEmperorList(chat.getTitle(), emperors));
             try {
                 absSender.executeAsync(sendMessage);

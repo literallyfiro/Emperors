@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021.
+ * The Emperors project is controlled by the GNU General Public License v3.0.
+ * You can find it in the LICENSE file on the GitHub repository.
+ */
+
 package me.onlyfire.emperors.bot.commands;
 
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
@@ -11,6 +17,24 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class StartCommand extends MessagedBotCommand {
 
+    private final String welcome = """
+            <b>Ciao! Benvenuto in @EmperorsRobot!</b>
+                                    
+            👑 <b>Cosa è Emperors?</b>
+            Emperors è un bot per far divertire gli utenti del vostro gruppo.
+            Scrivendo il nome di un imperatore, i vostri utenti potranno diventare l'imperatore del giorno.
+                                    
+            ❔ <b>Come funziona?</b>
+            Gli amministratori del gruppo avranno il permesso di creare un imperatore (e di rimuoverlo), inserendo una foto e il suo identificativo (che gli utenti dovranno scrivere per diventare l'imperatore del giorno)
+                                    
+            ⚡️ <b>Quanti imperatori si possono aggiungere in un gruppo?</b>
+            La risposta è semplice. Infiniti
+            Sbizzarritevi a creare i vostri imperatori senza nessun tipo di limite!
+                             
+             
+            ⚠️ <b>Nota, il bot è in uno stato chiamato BETA, ciò significa che non è la versione finale e ci potranno essere vari cambiamenti</b>
+            """;
+
     public StartCommand() {
         super("start", "Start");
     }
@@ -19,25 +43,9 @@ public class StartCommand extends MessagedBotCommand {
     public void execute(AbsSender absSender, User user, Message message, Chat chat, String[] strings) {
         if (!chat.isUserChat()) return;
 
+
         SendMessage sendMessage = InlineKeyboardBuilder.create(chat.getId())
-                .setText("""
-                        <b>Ciao! Benvenuto in @EmperorsRobot!</b>
-                                                
-                        👑 <b>Cosa è Emperors?</b>
-                        Emperors è un bot per far divertire gli utenti del vostro gruppo.
-                        Scrivendo il nome di un imperatore, i vostri utenti potranno diventare l'imperatore del giorno.
-                                                
-                        ❔ <b>Come funziona?</b>
-                        Gli amministratori del gruppo avranno il permesso di creare un imperatore (e di rimuoverlo), inserendo una foto e il suo identificativo (che gli utenti dovranno scrivere per diventare l'imperatore del giorno)
-                                                
-                        ⚡️ <b>Quanti imperatori si possono aggiungere in un gruppo?</b>
-                        La risposta è semplice. Infiniti
-                        Sbizzarritevi a creare i vostri imperatori senza nessun tipo di limite!
-                                         
-                         
-                        ⚠️ <b>Nota, il bot è in uno stato chiamato BETA, ciò significa che non è la versione finale e ci potranno essere vari cambiamenti</b>
-                        """
-                )
+                .setText(welcome)
                 .row()
                 .button("Aggiungimi al tuo gruppo \uD83C\uDF7E", "invite_me_to_group", "https://telegram.me/EmperorsRobot?startgroup=true")
                 .endRow()

@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021.
+ * The Emperors project is controlled by the GNU General Public License v3.0.
+ * You can find it in the LICENSE file on the GitHub repository.
+ */
+
 package me.onlyfire.emperors.bot.commands;
 
 public class SuggestionCommand {
@@ -17,7 +23,7 @@ public class SuggestionCommand {
 //            return;
 //
 //        if (CooldownManager.getInstance().isInCooldown(user, chat)) {
-//            sendMessage.setText(user.getFirstName() + " Hai già inviato una richiesta precedentemente! Aspetta un po' per inviarne un'altra");
+//            sendMessage.setText(user.getFirstName() + " Hai già inviato una richiesta precedentemente, aspetta per inviarne un'altra!");
 //            try {
 //                absSender.executeAsync(sendMessage);
 //            } catch (TelegramApiException e) {

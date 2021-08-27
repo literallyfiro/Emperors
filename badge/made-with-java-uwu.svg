@@ -1,3 +1,9 @@
+<!--
+  - Copyright (c) 2021.
+  - The Emperors project is controlled by the GNU General Public License v3.0.
+  - You can find it in the LICENSE file on the GitHub repository.
+  -->
+
 <svg xmlns="http://www.w3.org/2000/svg" width="234.45999999999998" height="35" viewBox="0 0 234.45999999999998 35">
     <rect class="svg__rect" x="0" y="0" width="115.31" height="35" fill="#FF0000"/>
     <rect class="svg__rect" x="113.31" y="0" width="121.14999999999999" height="35" fill="#D90000"/>

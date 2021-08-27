@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021.
+ * The Emperors project is controlled by the GNU General Public License v3.0.
+ * You can find it in the LICENSE file on the GitHub repository.
+ */
+
 package me.onlyfire.emperors.user.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
@@ -39,8 +45,6 @@ public class EmperorUserCreation extends EmperorUserMode {
     private final Chat chat;
     private final Instant instThen;
 
-    private final Object lock = new Object();
-
     private final String PHOTO_TEMPLATE = "cache" + File.separator + "%s.jpg";
 
     public EmperorUserCreation(EmperorsBot emperorsBot, AbsSender sender, User user, Chat chat, Message message) {
@@ -78,14 +82,8 @@ public class EmperorUserCreation extends EmperorUserMode {
 
     public void completed(Message updatedMessage, String newEmperorName) {
         try {
-            GetFile getPhoto = new GetFile();
-            getPhoto.setFileId(updatedMessage.getDocument().getFileId());
-            org.telegram.telegrambots.meta.api.objects.File photoFile = sender.execute(getPhoto);
-            File photo = new File(String.format(PHOTO_TEMPLATE, newEmperorName));
-
-            Downloader.download(photoFile, photo, emperorsBot.getBotVars().token());
-
-            uploadToImgur(photo, (result, throwable) -> {
+            File photo = downloadPhoto(updatedMessage, newEmperorName);
+            this.uploadToImgur(photo, (photoId, throwable) -> {
                 if (throwable != null) {
                     emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante l'invio a Imgur (API Offline?)", throwable));
                     return;
@@ -93,10 +91,6 @@ public class EmperorUserCreation extends EmperorUserMode {
                 SendMessage sendMessage = new SendMessage();
                 sendMessage.enableHtml(true);
                 sendMessage.setChatId(String.valueOf(chat.getId()));
-
-                JSONObject upload = new JSONObject(result);
-                JSONObject data = upload.getJSONObject("data");
-                String photoId = data.getString("id");
                 sendMessage.setText(String.format(Language.ADDED_EMPEROR_SUCCESSFULLY.toString(), newEmperorName));
 
                 CompletableFuture<Integer> processing = emperorsBot.getDatabase().createEmperor(chat, newEmperorName, photoId);
@@ -121,6 +115,16 @@ public class EmperorUserCreation extends EmperorUserMode {
         }
     }
 
+    private File downloadPhoto(Message updatedMessage, String newEmperorName) throws TelegramApiException {
+        GetFile getPhoto = new GetFile();
+        getPhoto.setFileId(updatedMessage.getDocument().getFileId());
+        org.telegram.telegrambots.meta.api.objects.File photoFile = sender.execute(getPhoto);
+        File photo = new File(String.format(PHOTO_TEMPLATE, newEmperorName));
+
+        Downloader.download(photoFile, photo, emperorsBot.getBotVars().getToken());
+        return photo;
+    }
+
     private void uploadToImgur(File file, UploadCallback callback) throws IOException {
         String data = getImageData(file);
         if (data.isEmpty()) return;
@@ -132,21 +136,26 @@ public class EmperorUserCreation extends EmperorUserMode {
                 .timeout(Duration.ofSeconds(15))
                 .headers(
                         "Content-Type", "application/x-www-form-urlencoded",
-                        "Authorization", "Client-ID " + emperorsBot.getBotVars().imgur()
+                        "Authorization", "Client-ID " + emperorsBot.getBotVars().getImgur()
                 )
                 .POST(HttpRequest.BodyPublishers.ofString(data))
                 .build();
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .whenComplete((callback::onUpload));
+                .whenComplete(((upload, throwable) -> {
+                    JSONObject jsonObject = new JSONObject(upload);
+                    JSONObject jsonData = jsonObject.getJSONObject("data");
+                    String photoId = jsonData.getString("id");
+                    callback.onUpload(photoId, throwable);
+                }));
     }
 
     private String getImageData(File file) throws IOException {
-        if (file == null) {
+        BufferedImage image = ImageIO.read(file);
+        if (image == null) {
             emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante la codifica del file"));
             return "";
         }
-        BufferedImage image = ImageIO.read(file);
         ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
         ImageIO.write(image, "png", byteArray);
         byte[] byteImage = byteArray.toByteArray();
@@ -158,7 +167,7 @@ public class EmperorUserCreation extends EmperorUserMode {
 
     @FunctionalInterface
     private interface UploadCallback {
-        void onUpload(String result, Throwable throwable);
+        void onUpload(String photoId, Throwable throwable);
     }
 
 }

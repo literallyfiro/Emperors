@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 2021.
+ * The Emperors project is controlled by the GNU General Public License v3.0.
+ * You can find it in the LICENSE file on the GitHub repository.
+ */
+
 package me.onlyfire.emperors.bot.listener.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
+import me.onlyfire.emperors.bot.exceptions.EmperorException;
 import me.onlyfire.emperors.bot.listener.BotListener;
 import me.onlyfire.emperors.database.Emperor;
 import me.onlyfire.emperors.database.EmperorsDatabase;
@@ -37,6 +44,10 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
 
         EmperorsDatabase database = emperorsBot.getDatabase();
         database.getEmperor(message.getChatId(), message.getText().toLowerCase()).whenComplete((emperor, exception) -> {
+            if (exception != null) {
+                emperorsBot.generateErrorMessage(chat, new EmperorException("Errore nel database", exception));
+                return;
+            }
             if (emperor == null) return;
             if (emperor.getTakenByName() == null || emperor.getTakenTime() == 0L) {
                 sendMessage.setText(takeEmperor(user, chat, message, emperor));
