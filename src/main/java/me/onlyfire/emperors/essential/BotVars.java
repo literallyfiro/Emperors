@@ -10,14 +10,6 @@ import lombok.Data;
 
 /**
  * Class file for storing bot variables, loaded from a <b>configuration file </b>.
- * <p>
- * Structure:
- * token -> The telegram bot token.
- * username -> the bot username
- * uri -> connection uri (see the {@link me.onlyfire.emperors.database.EmperorsDatabase} class)
- * trelloKey -> trello api key
- * trelloAccessToken -> trello application token
- * imgur -> imgur api token
  *
  * @author firo
  * @see me.onlyfire.emperors.Bot

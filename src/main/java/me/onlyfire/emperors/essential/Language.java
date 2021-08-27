@@ -11,6 +11,39 @@ import me.onlyfire.emperors.utils.Emoji;
 public enum Language {
 
     /* Multi Space */
+    WELCOME("""
+            <b>Ciao! Benvenuto in @EmperorsRobot!</b>
+                                    
+            👑 <b>Cosa è Emperors?</b>
+            Emperors è un bot per far divertire gli utenti del vostro gruppo.
+            Scrivendo il nome di un imperatore, i vostri utenti potranno diventare l'imperatore del giorno.
+                                    
+            ❔ <b>Come funziona?</b>
+            Gli amministratori del gruppo avranno il permesso di creare un imperatore (e di rimuoverlo), inserendo una foto e il suo identificativo (che gli utenti dovranno scrivere per diventare l'imperatore del giorno)
+                                    
+            ⚡️ <b>Quanti imperatori si possono aggiungere in un gruppo?</b>
+            La risposta è semplice. Infiniti
+            Sbizzarritevi a creare i vostri imperatori senza nessun tipo di limite!
+                             
+             
+            ⚠️ <b>Nota, il bot è in uno stato chiamato BETA, ciò significa che non è la versione finale e ci potranno essere vari cambiamenti</b>
+            """),
+
+    SETTINGS("""
+            ⚙️ <b>Impostazioni del gruppo %s</b>
+            
+            <i>Usa la tastiera per navigare tra le impostazioni</i>
+            """),
+
+//    <b>STATISTICHE:</b>
+//            👤 Imperatori massimi per utente: %s
+//             ⏱ Tempo di notifica: 1 ora
+
+    SETTINGS_SPECIFIC("""
+            <b>STATISTICHE:</b>
+             %s: %s
+            """),
+
     ADD_EMPEROR_FIRST_STEP("""
             <b>Perfetto</b>, adesso invia una foto (senza compressione di telegram) che identifica l'imperatore, con una didascalia contenente il suo nome (Gli utenti dovranno scrivere quel nome per diventare imperatori).
             <b>Esempio: https://imgur.com/a/chawtDS</b>

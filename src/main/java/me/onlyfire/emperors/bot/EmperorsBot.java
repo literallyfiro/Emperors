@@ -12,6 +12,7 @@ import me.onlyfire.emperors.bot.exceptions.EmperorException;
 import me.onlyfire.emperors.bot.listener.ListenerManager;
 import me.onlyfire.emperors.bot.listener.impl.AddEmperorListener;
 import me.onlyfire.emperors.bot.listener.impl.AdminPanelListener;
+import me.onlyfire.emperors.bot.listener.impl.SettingsListener;
 import me.onlyfire.emperors.bot.listener.impl.UserEmperorListener;
 import me.onlyfire.emperors.database.EmperorsDatabase;
 import me.onlyfire.emperors.essential.BotVars;
@@ -60,10 +61,12 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         register(new CancelCommand(this));
         register(new ListEmperorsCommand(this));
         register(new GlobalMessageCommand(this));
+        register(new SettingsCommand());
         register(new StartCommand());
         register(new AdminCommand());
 
         this.listenerManager.addListener(new AddEmperorListener(this));
+        this.listenerManager.addListener(new SettingsListener(this));
         this.listenerManager.addListener(new UserEmperorListener(this));
         this.listenerManager.addListener(new AdminPanelListener(this));
 
@@ -79,8 +82,13 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        Chat chat = update.getMessage().getChat();
-        if (!chats.contains(chat.getId())) chats.add(chat.getId());
+        if (update.getMessage() != null) {
+            Chat chat = update.getMessage().getChat();
+            if (!chat.isUserChat()) {
+                database.settingsInsert(chat);
+                if (!chats.contains(chat.getId())) chats.add(chat.getId());
+            }
+        }
         listenerManager.executeUpdate(update, this);
     }
 
@@ -137,7 +145,7 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
             //noinspection ResultOfMethodCallIgnored
             file.createNewFile();
             fos = new FileOutputStream(file, true);
-            byte[] b= error.getBytes();
+            byte[] b = error.getBytes();
             fos.write(b);
         } catch (IOException e) {
             e.printStackTrace();

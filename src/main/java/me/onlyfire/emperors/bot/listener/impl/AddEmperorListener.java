@@ -64,13 +64,14 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
                     emperorsBot.generateErrorMessage(chat, new EmperorException("Errore nel database", exception));
                     return;
                 }
-                sendMessage.setText(emperor == null ? Language.CREATION_IN_PROGRESS.toString() : Language.ALREADY_EXIST_EMPEROR.toString());
-                try {
-                    sender.executeAsync(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                if (emperor != null) {
+                    sendMessage.setText(Language.ALREADY_EXIST_EMPEROR.toString());
+                    try {
+                        sender.executeAsync(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
                 }
-
                 if (emperor == null) emperorUserCreation.completed(message, emperorName);
                 else emperorsBot.removeUserMode(user, chat, null);
             });

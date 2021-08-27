@@ -14,6 +14,7 @@ import me.onlyfire.emperors.utils.Downloader;
 import org.json.JSONObject;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -82,15 +83,19 @@ public class EmperorUserCreation extends EmperorUserMode {
 
     public void completed(Message updatedMessage, String newEmperorName) {
         try {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.enableHtml(true);
+            sendMessage.setChatId(String.valueOf(chat.getId()));
+            sendMessage.setText(Language.CREATION_IN_PROGRESS.toString());
+            sender.execute(sendMessage);
+            
             File photo = downloadPhoto(updatedMessage, newEmperorName);
             this.uploadToImgur(photo, (photoId, throwable) -> {
                 if (throwable != null) {
                     emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante l'invio a Imgur (API Offline?)", throwable));
                     return;
                 }
-                SendMessage sendMessage = new SendMessage();
-                sendMessage.enableHtml(true);
-                sendMessage.setChatId(String.valueOf(chat.getId()));
+
                 sendMessage.setText(String.format(Language.ADDED_EMPEROR_SUCCESSFULLY.toString(), newEmperorName));
 
                 CompletableFuture<Integer> processing = emperorsBot.getDatabase().createEmperor(chat, newEmperorName, photoId);

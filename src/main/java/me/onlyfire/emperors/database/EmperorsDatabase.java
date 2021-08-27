@@ -9,7 +9,6 @@ package me.onlyfire.emperors.database;
 import com.glyart.mystral.database.AsyncDatabase;
 import com.glyart.mystral.database.Credentials;
 import com.glyart.mystral.database.Mystral;
-import com.glyart.mystral.sql.ResultSetExtractor;
 import com.glyart.mystral.sql.ResultSetRowMapper;
 import com.glyart.mystral.sql.impl.DefaultExtractor;
 import com.ibatis.common.jdbc.ScriptRunner;
@@ -27,7 +26,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.Instant;
@@ -35,6 +33,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -87,6 +86,11 @@ public class EmperorsDatabase {
         @Language("MySQL") String sql = "INSERT INTO emperors (groupId, name, photoId) VALUES(?,?,?)";
         return asyncDb.update(sql, new Object[]{chat.getId(), newEmperorName, photoId}, true,
                 Types.BIGINT, Types.VARCHAR, Types.VARCHAR);
+    }
+
+    public void settingsInsert(Chat chat) {
+        @Language("MySQL") String sql = "INSERT INTO settings (groupId) SELECT * FROM (SELECT ? AS groupId) AS tmp WHERE NOT EXISTS (SELECT groupId FROM settings WHERE groupId = ?) LIMIT 1";
+        asyncDb.update(sql, new Long[]{chat.getId(), chat.getId()}, false, Types.BIGINT, Types.BIGINT);
     }
 
     public long takeEmperor(User user, Chat chat, String emperorName) {
@@ -167,6 +171,25 @@ public class EmperorsDatabase {
         });
     }
 
+    public CompletableFuture<Settings> getGroupSettings(Long groupId) {
+        @Language("MySQL") String sql = "SELECT * FROM settings WHERE groupId=?";
+        return settingsQuery(sql, new Object[]{groupId}, (((resultSet, i) -> {
+            Settings settings = new Settings();
+            settings.setMaxEmperorsPerUser(resultSet.getInt(2));
+            return settings;
+        })), Types.BIGINT);
+    }
+
+    public void setGroupSettings(Long groupId, String table, Integer value) {
+        @Language("MySQL") String sql = "UPDATE settings SET " + table + "=? WHERE groupId=?";
+        CompletableFuture<Integer> future = asyncDb.update(sql, new Object[]{value, groupId}, true, Types.BIGINT, Types.INTEGER);
+        future.whenComplete((integer, exception) -> {
+            if (exception != null) {
+                emperorsBot.getLogger().error("Could not set group settings for group " + groupId + " (" + table + ": " + value + ")", exception);
+            }
+        });
+    }
+
     /**
      * Workaround for the normal AsyncDatabase#queryForObject method because
      * that method would print a warning in the console if the object is null
@@ -182,6 +205,28 @@ public class EmperorsDatabase {
         CompletableFuture<List<Emperor>> resultList = asyncDb.query(sql, args, new DefaultExtractor<>(resultSetRowMapper, 1), sqlTypes);
         try {
             List<Emperor> list = resultList.get();
+            return CompletableFuture.supplyAsync(() -> list.isEmpty() ? null : list.get(0), this.executor);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Workaround for the normal AsyncDatabase#queryForObject method because
+     * that method would print a warning in the console if the object is null
+     *
+     * @param sql the query to execute
+     * @param args arguments to bind to the query
+     * @param resultSetRowMapper a callback that will map one object per ResultSet row
+     * @param sqlTypes an integer array containing the type of the query's parameters, expressed as {@link java.sql.Types}
+     * @return a CompletableFuture of Settings
+     * @see Types
+     */
+    private CompletableFuture<Settings> settingsQuery(@Language("MySQL") @NotNull String sql, Object[] args, ResultSetRowMapper<Settings> resultSetRowMapper, int... sqlTypes) {
+        CompletableFuture<List<Settings>> resultList = asyncDb.query(sql, args, new DefaultExtractor<>(resultSetRowMapper, 1), sqlTypes);
+        try {
+            List<Settings> list = resultList.get();
             return CompletableFuture.supplyAsync(() -> list.isEmpty() ? null : list.get(0), this.executor);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

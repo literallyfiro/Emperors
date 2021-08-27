@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `emperors`
     PRIMARY KEY (id)
 );
 
+
 CREATE TABLE IF NOT EXISTS `settings`
 (
     groupId            LONG NOT NULL,
