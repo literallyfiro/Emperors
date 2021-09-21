@@ -26,6 +26,7 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
         Chat chat = message.getChat();
         String groupId = String.valueOf(message.getChatId());
         User user = message.getFrom();
+
         if (MemberUtils.isNormalUser(sender, user, chat))
             return;
 
@@ -37,7 +38,7 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
         if (!(emperorsBot.userMode.get(user) instanceof EmperorUserCreation emperorUserCreation))
             return;
 
-        if (emperorUserCreation.getChat().getId().equals(chat.getId()) && message.getReplyToMessage().equals(emperorUserCreation.getMessage())) {
+        if (emperorUserCreation.getChat().getId().equals(chat.getId())) {
             if (message.hasPhoto()) {
                 sendMessage.setText("Devi mandare una foto SENZA usare la compressione di telegram!");
                 try {

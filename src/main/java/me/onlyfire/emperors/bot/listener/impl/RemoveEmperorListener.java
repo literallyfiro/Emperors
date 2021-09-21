@@ -37,7 +37,7 @@ public record RemoveEmperorListener(EmperorsBot emperorsBot) implements BotListe
         if (!(emperorsBot.userMode.get(user) instanceof EmperorUserRemoval emperorUserRemoval))
             return;
 
-        if (emperorUserRemoval.getChat().getId().equals(chat.getId()) && message.getReplyToMessage().equals(emperorUserRemoval.getMessage())) {
+        if (emperorUserRemoval.getChat().getId().equals(chat.getId())) {
             if (!message.hasText())
                 return;
 
