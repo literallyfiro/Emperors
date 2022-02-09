@@ -17,7 +17,6 @@ here is a summary of the functions of the bot:
 * (Coming Soon) GIFs and Videos support
 * All data stored in a MySQL database
 * Emperors listing
-* Exception handling
 
 ## 🎈 How to run Emperors locally?
 
