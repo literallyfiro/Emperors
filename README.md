@@ -10,7 +10,7 @@ Inspired from @ReUnicoRebornBot concept and @RePaperaBot, Emperors is a new way 
 
 With Emperors, you can create your **own** unlimited emperors, with a photo of your choice!
 
-here is a quick summary of the features of the Emperors:
+here is a quick summary of the features of Emperors:
 
 * Unlimited emperor creation
 * Photo support
