@@ -8,14 +8,12 @@ Inspired from @ReUnicoRebornBot concept and @RePaperaBot, Emperors is a new way 
 
 ## 🎉 Create your own emperors
 
-With Emperors, you can create your **own** emperors, with a photo of your choice. Unlimited, this is the word of this
-bot.
+With Emperors, you can create your **own** unlimited emperors, with a photo of your choice!
 
-here is a summary of the functions of the bot:
+here is a quick summary of the features of the Emperors:
 
 * Unlimited emperor creation
 * Photo support
-* (Coming Soon) GIFs and Videos support
 * All data stored in a MySQL database
 * Emperors listing
 * Exception handling
