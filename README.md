@@ -25,3 +25,11 @@ here is a quick summary of the features of Emperors:
 
 Simple, just clone this repository with `git clone https://github.com/ImOnlyFire/Emperors.git`
 and then build the project with `mvn clean install`. Your new jar is located at `target/EmperorsBot-$VERSION.jar`
+
+## ⭐ Creating a clone
+
+* First of all, you need to create a new bot from [@BotFather](https://t.me/botfather) - Make sure to disable privacy mode as well!
+* Then, you need an imgur api token. To get it, follow this link from the [Imgur Docs](https://apidocs.imgur.com/#authorization-and-oauth).
+* And finally, you need a mysql database connection available.
+
+Finally go to the `config.properties` file and fill in with the bot token, bot username, database credentials and imgur token
