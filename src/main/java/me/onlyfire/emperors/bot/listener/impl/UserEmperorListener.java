@@ -1,17 +1,11 @@
-/*
- * Copyright (c) 2021.
- * The Emperors project is controlled by the GNU General Public License v3.0.
- * You can find it in the LICENSE file on the GitHub repository.
- */
-
 package me.onlyfire.emperors.bot.listener.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
-import me.onlyfire.emperors.bot.exceptions.EmperorException;
+import me.onlyfire.emperors.bot.EmperorException;
 import me.onlyfire.emperors.bot.listener.BotListener;
-import me.onlyfire.emperors.database.Emperor;
-import me.onlyfire.emperors.database.EmperorsDatabase;
-import me.onlyfire.emperors.essential.Language;
+import me.onlyfire.emperors.bot.emperor.Emperor;
+import me.onlyfire.emperors.bot.emperor.EmperorsDatabase;
+import me.onlyfire.emperors.Language;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;

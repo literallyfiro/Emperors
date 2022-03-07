@@ -1,12 +1,4 @@
-/*
- * Copyright (c) 2021.
- * The Emperors project is controlled by the GNU General Public License v3.0.
- * You can find it in the LICENSE file on the GitHub repository.
- */
-
-package me.onlyfire.emperors.essential;
-
-import me.onlyfire.emperors.utils.Emoji;
+package me.onlyfire.emperors;
 
 public enum Language {
 
@@ -35,10 +27,6 @@ public enum Language {
             <i>Usa la tastiera per navigare tra le impostazioni</i>
             """),
 
-//    <b>STATISTICHE:</b>
-//            👤 Imperatori massimi per utente: %s
-//             ⏱ Tempo di notifica: 1 ora
-
     SETTINGS_SPECIFIC("""
             <b>STATISTICHE:</b>
              %s: %s
@@ -61,18 +49,6 @@ public enum Language {
             "\n" +
             "<b>MESSAGE:</b> <code>%s</code>"
     ),
-    ERROR_EMPEROR_CREATION_LOG("""
-            <b>Hey Hey Hey! Nuovo bug, altro fix!</b>
-
-            Ho appena tirato un'eccezione mentre cercavo di creare un imperatore per un innocente utente, la prossima volta programmami meglio invece di fare altro...
-                        
-            <b>Informazioni utili:</b>
-                - <b>Chat ID:</b> <code>%s</code>
-                - <b>Error Code:</b> <code>%s</code>
-                        
-            Qui troverai l'exception tirata dal bot, muoviti a fixarmi :(
-            """
-    ),
 
     /* Simple messages */
     NEW_EMPEROR_OF_DAY("<a href=\"%s\">&#8205</a>" + Emoji.PARTY + " ||• <b>Congratulazioni</b> %s •|| " +
@@ -88,14 +64,14 @@ public enum Language {
     THERE_ARE_NO_EMPERORS("<b>Non ci sono imperatori in questo gruppo!</b> " + Emoji.CRYING_FACE),
     NOT_EXIST_EMPEROR(Emoji.HEAVY_MULTIPLICATION_X + " Non esiste un imperatore con questo nome!");
 
-    String language;
+    final String s;
 
     Language(String lang) {
-        this.language = lang;
+        this.s = lang;
     }
 
     @Override
     public String toString() {
-        return language;
+        return s;
     }
 }

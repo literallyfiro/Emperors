@@ -1,20 +1,13 @@
-/*
- * Copyright (c) 2021.
- * The Emperors project is controlled by the GNU General Public License v3.0.
- * You can find it in the LICENSE file on the GitHub repository.
- */
-
-package me.onlyfire.emperors.user.impl;
+package me.onlyfire.emperors.bot.emperor.user.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
-import me.onlyfire.emperors.bot.exceptions.EmperorException;
-import me.onlyfire.emperors.essential.Language;
-import me.onlyfire.emperors.user.EmperorUserMode;
-import me.onlyfire.emperors.utils.Downloader;
+import me.onlyfire.emperors.bot.EmperorException;
+import me.onlyfire.emperors.Language;
+import me.onlyfire.emperors.bot.emperor.user.EmperorUserMode;
+import me.onlyfire.emperors.Downloader;
 import org.json.JSONObject;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -81,6 +74,7 @@ public class EmperorUserCreation extends EmperorUserMode {
         return true;
     }
 
+    @Override
     public void completed(Message updatedMessage, String newEmperorName) {
         try {
             SendMessage sendMessage = new SendMessage();

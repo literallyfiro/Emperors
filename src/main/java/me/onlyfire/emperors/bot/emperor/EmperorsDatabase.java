@@ -1,22 +1,13 @@
-/*
- * Copyright (c) 2021.
- * The Emperors project is controlled by the GNU General Public License v3.0.
- * You can find it in the LICENSE file on the GitHub repository.
- */
-
-package me.onlyfire.emperors.database;
+package me.onlyfire.emperors.bot.emperor;
 
 import com.glyart.mystral.database.AsyncDatabase;
 import com.glyart.mystral.database.Credentials;
 import com.glyart.mystral.database.Mystral;
-import com.glyart.mystral.sql.ResultSetRowMapper;
-import com.glyart.mystral.sql.impl.DefaultExtractor;
 import com.ibatis.common.jdbc.ScriptRunner;
 import lombok.RequiredArgsConstructor;
 import me.onlyfire.emperors.bot.EmperorsBot;
-import me.onlyfire.emperors.bot.exceptions.EmperorException;
+import me.onlyfire.emperors.bot.EmperorException;
 import org.intellij.lang.annotations.Language;
-import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -33,18 +24,16 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
+@SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve"})
 @RequiredArgsConstructor
 public class EmperorsDatabase {
 
     private final EmperorsBot emperorsBot;
     private AsyncDatabase asyncDb;
-    private Executor executor;
 
     public void connect(String uri) {
         String[] split = uri.split(";");
@@ -57,7 +46,7 @@ public class EmperorsDatabase {
                 .port(Integer.parseInt(split[5]))
                 .build();
 
-        this.executor = (command) -> new Thread(command).start();
+        Executor executor = (command) -> new Thread(command).start();
         this.asyncDb = Mystral.newAsyncDatabase(credentials, executor);
         this.runScripts();
     }
@@ -125,38 +114,30 @@ public class EmperorsDatabase {
         CompletableFuture<Integer> future = asyncDb.update(sql, new Object[]{name, groupId}, true,
                 Types.VARCHAR, Types.BIGINT);
 
-        future.whenComplete((integer, exception) -> {
-            processingTime.set(System.currentTimeMillis() - initial);
-        });
+        future.whenComplete((integer, exception) -> processingTime.set(System.currentTimeMillis() - initial));
 
         return processingTime.get();
     }
 
     public CompletableFuture<Emperor> getEmperor(Long groupId, String name) {
         @Language("MySQL") String sql = "SELECT * FROM emperors WHERE groupId=? AND name=?";
-        return emperorQuery(sql, new Object[]{groupId, name}, (((resultSet, i) -> {
-            return new Emperor(resultSet.getLong(2), resultSet.getString(3),
-                    resultSet.getString(4), resultSet.getLong(5),
-                    resultSet.getString(6), resultSet.getLong(7));
-        })), Types.BIGINT, Types.VARCHAR);
+        return asyncDb.queryForObject(sql, new Object[]{groupId, name}, (((resultSet, i) -> new Emperor(resultSet.getLong(2), resultSet.getString(3),
+                resultSet.getString(4), resultSet.getLong(5),
+                resultSet.getString(6), resultSet.getLong(7)))), Types.BIGINT, Types.VARCHAR);
     }
 
     public CompletableFuture<List<Emperor>> getEmperors(Long groupId) {
         @Language("MySQL") String sql = "SELECT * FROM emperors WHERE groupId=?";
-        return asyncDb.queryForList(sql, new Long[]{groupId}, (resultSet, rowNumber) -> {
-            return new Emperor(resultSet.getLong(2), resultSet.getString(3),
-                    resultSet.getString(4), resultSet.getLong(5),
-                    resultSet.getString(6), resultSet.getLong(7));
-        }, Types.BIGINT);
+        return asyncDb.queryForList(sql, new Long[]{groupId}, (resultSet, rowNumber) -> new Emperor(resultSet.getLong(2), resultSet.getString(3),
+                resultSet.getString(4), resultSet.getLong(5),
+                resultSet.getString(6), resultSet.getLong(7)), Types.BIGINT);
     }
 
     public CompletableFuture<List<Emperor>> getEmperors() {
         @Language("MySQL") String sql = "SELECT * FROM emperors";
-        return asyncDb.queryForList(sql, null, (resultSet, rowNumber) -> {
-            return new Emperor(resultSet.getLong(2), resultSet.getString(3),
-                    resultSet.getString(4), resultSet.getLong(5),
-                    resultSet.getString(6), resultSet.getLong(7));
-        });
+        return asyncDb.queryForList(sql, null, (resultSet, rowNumber) -> new Emperor(resultSet.getLong(2), resultSet.getString(3),
+                resultSet.getString(4), resultSet.getLong(5),
+                resultSet.getString(6), resultSet.getLong(7)));
     }
 
     public void emitEmperor(Emperor emperor) {
@@ -169,69 +150,6 @@ public class EmperorsDatabase {
                 emperorsBot.getLogger().warn("Could not emit emperor" + emperor);
             }
         });
-    }
-
-    public CompletableFuture<Settings> getGroupSettings(Long groupId) {
-        @Language("MySQL") String sql = "SELECT * FROM settings WHERE groupId=?";
-        return settingsQuery(sql, new Object[]{groupId}, (((resultSet, i) -> {
-            Settings settings = new Settings();
-            settings.setMaxEmperorsPerUser(resultSet.getInt(2));
-            return settings;
-        })), Types.BIGINT);
-    }
-
-    public void setGroupSettings(Long groupId, String table, Integer value) {
-        @Language("MySQL") String sql = "UPDATE settings SET " + table + "=? WHERE groupId=?";
-        CompletableFuture<Integer> future = asyncDb.update(sql, new Object[]{value, groupId}, true, Types.BIGINT, Types.INTEGER);
-        future.whenComplete((integer, exception) -> {
-            if (exception != null) {
-                emperorsBot.getLogger().error("Could not set group settings for group " + groupId + " (" + table + ": " + value + ")", exception);
-            }
-        });
-    }
-
-    /**
-     * Workaround for the normal AsyncDatabase#queryForObject method because
-     * that method would print a warning in the console if the object is null
-     *
-     * @param sql the query to execute
-     * @param args arguments to bind to the query
-     * @param resultSetRowMapper a callback that will map one object per ResultSet row
-     * @param sqlTypes an integer array containing the type of the query's parameters, expressed as {@link java.sql.Types}
-     * @return a CompletableFuture of Emperor
-     * @see Types
-     */
-    private CompletableFuture<Emperor> emperorQuery(@Language("MySQL") @NotNull String sql, Object[] args, ResultSetRowMapper<Emperor> resultSetRowMapper, int... sqlTypes) {
-        CompletableFuture<List<Emperor>> resultList = asyncDb.query(sql, args, new DefaultExtractor<>(resultSetRowMapper, 1), sqlTypes);
-        try {
-            List<Emperor> list = resultList.get();
-            return CompletableFuture.supplyAsync(() -> list.isEmpty() ? null : list.get(0), this.executor);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Workaround for the normal AsyncDatabase#queryForObject method because
-     * that method would print a warning in the console if the object is null
-     *
-     * @param sql the query to execute
-     * @param args arguments to bind to the query
-     * @param resultSetRowMapper a callback that will map one object per ResultSet row
-     * @param sqlTypes an integer array containing the type of the query's parameters, expressed as {@link java.sql.Types}
-     * @return a CompletableFuture of Settings
-     * @see Types
-     */
-    private CompletableFuture<Settings> settingsQuery(@Language("MySQL") @NotNull String sql, Object[] args, ResultSetRowMapper<Settings> resultSetRowMapper, int... sqlTypes) {
-        CompletableFuture<List<Settings>> resultList = asyncDb.query(sql, args, new DefaultExtractor<>(resultSetRowMapper, 1), sqlTypes);
-        try {
-            List<Settings> list = resultList.get();
-            return CompletableFuture.supplyAsync(() -> list.isEmpty() ? null : list.get(0), this.executor);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private Connection getConnection() {

@@ -1,13 +1,7 @@
-/*
- * Copyright (c) 2021.
- * The Emperors project is controlled by the GNU General Public License v3.0.
- * You can find it in the LICENSE file on the GitHub repository.
- */
-
 package me.onlyfire.emperors.bot.commands;
 
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
-import me.onlyfire.emperors.essential.Language;
+import me.onlyfire.emperors.Language;
 import me.onlyfire.emperors.utils.InlineKeyboardBuilder;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
