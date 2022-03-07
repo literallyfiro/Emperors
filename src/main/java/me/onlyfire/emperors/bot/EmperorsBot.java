@@ -47,7 +47,6 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         register(new RemoveEmperorCommand(this));
         register(new CancelCommand(this));
         register(new ListEmperorsCommand(this));
-        register(new GlobalMessageCommand(this));
         register(new StartCommand());
 
         this.listenerManager.addListener(new AddEmperorListener(this));
@@ -65,13 +64,6 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        if (update.getMessage() != null) {
-            Chat chat = update.getMessage().getChat();
-            if (!chat.isUserChat()) {
-                database.settingsInsert(chat);
-                if (!chats.contains(chat.getId())) chats.add(chat.getId());
-            }
-        }
         listenerManager.executeUpdate(update, this);
     }
 

@@ -77,11 +77,6 @@ public class EmperorsDatabase {
                 Types.BIGINT, Types.VARCHAR, Types.VARCHAR);
     }
 
-    public void settingsInsert(Chat chat) {
-        @Language("MySQL") String sql = "INSERT INTO settings (groupId) SELECT * FROM (SELECT ? AS groupId) AS tmp WHERE NOT EXISTS (SELECT groupId FROM settings WHERE groupId = ?) LIMIT 1";
-        asyncDb.update(sql, new Long[]{chat.getId(), chat.getId()}, false, Types.BIGINT, Types.BIGINT);
-    }
-
     public long takeEmperor(User user, Chat chat, String emperorName) {
         AtomicLong processingTime = new AtomicLong();
         long initial = System.currentTimeMillis();
