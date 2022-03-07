@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class BotVars {
-    private final String token, username, uri, trelloKey, trelloAccessToken, imgur;
+    private final String token, username, uri, imgur;
 }

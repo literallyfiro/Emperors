@@ -28,9 +28,7 @@ public class Main {
         logger.info("Huge thanks to all of the MTG24 Team for making this project possible!");
 
         Properties props = loadProperties();
-
-        BotVars botVars = new BotVars(props.getProperty("token"), props.getProperty("username"),
-                props.getProperty("uri"), props.getProperty("trelloKey"), props.getProperty("trelloAccessToken"), props.getProperty("imgur"));
+        BotVars botVars = new BotVars(props.getProperty("token"), props.getProperty("username"), props.getProperty("uri"), props.getProperty("imgur"));
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         File file = new File("cache");
