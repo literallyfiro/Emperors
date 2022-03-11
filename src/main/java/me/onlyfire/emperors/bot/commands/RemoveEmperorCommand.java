@@ -3,8 +3,8 @@ package me.onlyfire.emperors.bot.commands;
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
 import me.onlyfire.emperors.bot.EmperorException;
-import me.onlyfire.emperors.bot.emperor.EmperorsDatabase;
-import me.onlyfire.emperors.Language;
+import me.onlyfire.emperors.bot.database.EmperorsDatabase;
+import me.onlyfire.emperors.bot.Language;
 import me.onlyfire.emperors.utils.MemberUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -65,9 +65,9 @@ public class RemoveEmperorCommand extends MessagedBotCommand {
             }
 
             sendMessage.setText(String.format(Language.REMOVED_EMPEROR_SUCCESSFULLY.toString(), emperorName));
-            long processingTime = database.deleteEmperor(emperorName, chat.getId());
-            String joining = "Removed emperor %s on group %s (Familiar name: %s). Took %sms for completion.";
-            emperorsBot.getLogger().info(String.format(joining, emperorName, chat.getId(), chat.getTitle(), processingTime));
+            database.deleteEmperor(emperorName, chat);
+            String joining = "Removed emperor %s on group %s (Familiar name: %s).";
+            emperorsBot.getLogger().info(String.format(joining, emperorName, chat.getId(), chat.getTitle()));
 
             try {
                 absSender.execute(sendMessage);

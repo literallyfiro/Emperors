@@ -2,8 +2,8 @@ package me.onlyfire.emperors.bot.commands;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
-import me.onlyfire.emperors.Language;
-import me.onlyfire.emperors.bot.emperor.user.impl.EmperorUserCreation;
+import me.onlyfire.emperors.bot.Language;
+import me.onlyfire.emperors.bot.user.impl.EmperorUserCreation;
 import me.onlyfire.emperors.utils.MemberUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;

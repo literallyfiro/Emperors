@@ -1,4 +1,4 @@
-package me.onlyfire.emperors;
+package me.onlyfire.emperors.utils;
 
 @SuppressWarnings("unused")
 public enum Emoji {

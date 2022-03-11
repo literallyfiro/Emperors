@@ -1,4 +1,4 @@
-package me.onlyfire.emperors;
+package me.onlyfire.emperors.policy;
 
 import ch.qos.logback.core.joran.spi.NoAutoStart;
 import ch.qos.logback.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy;

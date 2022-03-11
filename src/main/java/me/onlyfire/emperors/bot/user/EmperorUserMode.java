@@ -1,4 +1,4 @@
-package me.onlyfire.emperors.bot.emperor.user;
+package me.onlyfire.emperors.bot.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

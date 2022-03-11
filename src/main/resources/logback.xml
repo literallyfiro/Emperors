@@ -38,7 +38,7 @@
         <file>${HOME_LOG}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/archived/log.%d{dd-MM-yyyy}_%d{HH:mm:ss,aux}.log</fileNamePattern>
-            <TimeBasedFileNamingAndTriggeringPolicy class="me.onlyfire.emperors.StartupTimeBasedTriggeringPolicy"/>
+            <TimeBasedFileNamingAndTriggeringPolicy class="me.onlyfire.emperors.policy.StartupTimeBasedTriggeringPolicy"/>
         </rollingPolicy>
         <encoder>
             <pattern>%d %p %c{1.} [%t] %m%n</pattern>

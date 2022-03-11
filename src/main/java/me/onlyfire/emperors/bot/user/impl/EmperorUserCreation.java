@@ -1,10 +1,10 @@
-package me.onlyfire.emperors.bot.emperor.user.impl;
+package me.onlyfire.emperors.bot.user.impl;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.EmperorException;
-import me.onlyfire.emperors.Language;
-import me.onlyfire.emperors.bot.emperor.user.EmperorUserMode;
-import me.onlyfire.emperors.Downloader;
+import me.onlyfire.emperors.bot.Language;
+import me.onlyfire.emperors.bot.user.EmperorUserMode;
+import me.onlyfire.emperors.utils.Downloader;
 import org.json.JSONObject;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

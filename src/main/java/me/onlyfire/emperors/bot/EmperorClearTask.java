@@ -1,8 +1,6 @@
-package me.onlyfire.emperors.bot.emperor;
+package me.onlyfire.emperors.bot;
 
-import me.onlyfire.emperors.bot.EmperorsBot;
-import me.onlyfire.emperors.bot.emperor.Emperor;
-import me.onlyfire.emperors.bot.emperor.EmperorsDatabase;
+import me.onlyfire.emperors.bot.database.EmperorsDatabase;
 
 public record EmperorClearTask(EmperorsBot emperorsBot) implements Runnable {
 

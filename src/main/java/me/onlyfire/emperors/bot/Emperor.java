@@ -1,4 +1,4 @@
-package me.onlyfire.emperors.bot.emperor;
+package me.onlyfire.emperors.bot;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package me.onlyfire.emperors;
+package me.onlyfire.emperors.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;

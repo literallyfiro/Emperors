@@ -1,6 +1,6 @@
-package me.onlyfire.emperors.main;
+package me.onlyfire.emperors;
 
-import me.onlyfire.emperors.BotVars;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import me.onlyfire.emperors.bot.EmperorsBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +13,9 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
-public class Main {
+public class Application {
 
     public static void main(String[] args) {
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
@@ -30,7 +31,9 @@ public class Main {
         Properties props = loadProperties();
         BotVars botVars = new BotVars(props.getProperty("token"), props.getProperty("username"), props.getProperty("uri"), props.getProperty("imgur"));
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("main-thread").build();
+        ExecutorService executor = Executors.newSingleThreadExecutor(namedThreadFactory);
+
         File file = new File("cache");
         if (!file.exists() && file.mkdirs())
             logger.info("Created cache directory, situated in " + file.getAbsolutePath());
@@ -49,7 +52,7 @@ public class Main {
         Properties props = new Properties();
         File propsFile = new File("config.properties");
         if (!propsFile.exists()) {
-            try (InputStream is = Main.class.getClassLoader().getResourceAsStream("config.properties")) {
+            try (InputStream is = Application.class.getClassLoader().getResourceAsStream("config.properties")) {
                 props.load(is);
                 try (OutputStream output = new FileOutputStream("config.properties")) {
                     props.store(output, null);

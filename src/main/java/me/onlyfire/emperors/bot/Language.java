@@ -1,4 +1,6 @@
-package me.onlyfire.emperors;
+package me.onlyfire.emperors.bot;
+
+import me.onlyfire.emperors.utils.Emoji;
 
 public enum Language {
 
@@ -23,7 +25,7 @@ public enum Language {
 
     SETTINGS("""
             ⚙️ <b>Impostazioni del gruppo %s</b>
-            
+                        
             <i>Usa la tastiera per navigare tra le impostazioni</i>
             """),
 
@@ -42,8 +44,6 @@ public enum Language {
     GENERAL_ERROR("<b>Non è stato possibile eseguire la tua azione!</b> " + Emoji.CRYING_FACE +
             "\n" +
             "<i>Mi dispiace averti disturbato, ma c'è stato un problema tecnico nel bot! Molto probabilmente (anzi, sicuramente) questo errore è stato generato per via dell'incapacità dello sviluppatore nel controllare le exceptions in java.</i>\n" +
-            "\n" +
-            "(Ah e tranquillo, ho già taggato segretamente lo sviluppatore per incitarlo ad aggiustare questo problema" + Emoji.MOON + ")" +
             "\n\n" +
             "<b>ERROR CODE:</b> <code>%s</code>" +
             "\n" +
@@ -53,6 +53,7 @@ public enum Language {
     /* Simple messages */
     NEW_EMPEROR_OF_DAY("<a href=\"%s\">&#8205</a>" + Emoji.PARTY + " ||• <b>Congratulazioni</b> %s •|| " +
             Emoji.PARTY + "\n\n" + "➥ Sei il nuovo imperatore <code>%s</code> di oggi!"),
+    MAX_EMPERORS(Emoji.RAILWAY_CAR + " Hai già conquistato %s imperatori! Il limite per utente è di %s imperatori."),
     REMOVE_EMPEROR_FIRST_STEP("Rispondi a questo messaggio con il nome dell'imperatore che vuoi eliminare"),
     ADDED_EMPEROR_SUCCESSFULLY("Complimenti, l'imperatore <code>%s</code> è ora disponibile a tutti gli utenti!"),
     ALREADY_HAS_EMPEROR(Emoji.CRYING_FACE + " <b>Mi dispiace!</b> %s ha già preso il posto di re <code>%s</code>!"),

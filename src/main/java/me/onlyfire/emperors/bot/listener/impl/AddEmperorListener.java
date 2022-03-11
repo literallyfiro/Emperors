@@ -3,9 +3,9 @@ package me.onlyfire.emperors.bot.listener.impl;
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.EmperorException;
 import me.onlyfire.emperors.bot.listener.BotListener;
-import me.onlyfire.emperors.bot.emperor.EmperorsDatabase;
-import me.onlyfire.emperors.Language;
-import me.onlyfire.emperors.bot.emperor.user.impl.EmperorUserCreation;
+import me.onlyfire.emperors.bot.database.EmperorsDatabase;
+import me.onlyfire.emperors.bot.Language;
+import me.onlyfire.emperors.bot.user.impl.EmperorUserCreation;
 import me.onlyfire.emperors.utils.MemberUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -21,21 +21,18 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
     public void execute(Update update, AbsSender sender) {
         Message message = update.getMessage();
 
-        if (message == null)
-            return;
+        if (message == null) return;
 
         Chat chat = message.getChat();
         User user = message.getFrom();
-        if (MemberUtils.isNormalUser(sender, user, chat))
-            return;
+        if (MemberUtils.isNormalUser(sender, user, chat)) return;
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableHtml(true);
         sendMessage.setChatId(String.valueOf(chat.getId()));
         sendMessage.setReplyToMessageId(message.getMessageId());
 
-        if (!(emperorsBot.getUserMode().get(user) instanceof EmperorUserCreation emperorUserCreation))
-            return;
+        if (!(emperorsBot.getUserMode().get(user) instanceof EmperorUserCreation emperorUserCreation)) return;
 
         if (emperorUserCreation.getChat().getId().equals(chat.getId())) {
             if (message.hasPhoto()) {
@@ -48,8 +45,7 @@ public record AddEmperorListener(EmperorsBot emperorsBot) implements BotListener
                 return;
             }
 
-            if (!message.hasDocument() || message.getCaption() == null || message.getCaption().isEmpty())
-                return;
+            if (!message.hasDocument() || message.getCaption() == null || message.getCaption().isEmpty()) return;
 
             String emperorName = message.getCaption().toLowerCase();
             EmperorsDatabase database = emperorsBot.getDatabase();

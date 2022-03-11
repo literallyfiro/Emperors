@@ -2,14 +2,14 @@ package me.onlyfire.emperors.bot;
 
 import lombok.Getter;
 import me.onlyfire.emperors.bot.commands.*;
+import me.onlyfire.emperors.bot.commands.settings.GetSettingsCommand;
+import me.onlyfire.emperors.bot.commands.settings.UpdateSettingsCommand;
 import me.onlyfire.emperors.bot.listener.ListenerManager;
 import me.onlyfire.emperors.bot.listener.impl.AddEmperorListener;
 import me.onlyfire.emperors.bot.listener.impl.UserEmperorListener;
-import me.onlyfire.emperors.bot.emperor.EmperorsDatabase;
+import me.onlyfire.emperors.bot.database.EmperorsDatabase;
 import me.onlyfire.emperors.BotVars;
-import me.onlyfire.emperors.Language;
-import me.onlyfire.emperors.bot.emperor.EmperorClearTask;
-import me.onlyfire.emperors.bot.emperor.user.EmperorUserMode;
+import me.onlyfire.emperors.bot.user.EmperorUserMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
@@ -19,6 +19,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,6 +49,8 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         register(new RemoveEmperorCommand(this));
         register(new CancelCommand(this));
         register(new ListEmperorsCommand(this));
+        register(new GetSettingsCommand(this));
+        register(new UpdateSettingsCommand(this));
         register(new StartCommand());
 
         this.listenerManager.addListener(new AddEmperorListener(this));
@@ -93,6 +97,15 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+
+        logger.error(getStackTrace(throwable));
+    }
+
+    private String getStackTrace(Throwable throwable) {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw, true);
+        throwable.printStackTrace(pw);
+        return sw.getBuffer().toString().replace("at ", "-> ");
     }
 
     private String generateErrorCode() {
