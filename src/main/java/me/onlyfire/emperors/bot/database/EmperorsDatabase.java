@@ -9,6 +9,7 @@ import me.onlyfire.emperors.bot.EmperorException;
 import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.Emperor;
 import me.onlyfire.emperors.bot.Settings;
+import me.onlyfire.emperors.utils.SQLTypeMapping;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -25,7 +26,9 @@ import java.sql.Types;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -79,7 +82,7 @@ public class EmperorsDatabase {
         return asyncDb.update(
                 INSERT_EMPEROR,
                 new Object[]{chat.getId(), newEmperorName, photoId},
-                true,
+                false,
                 Types.BIGINT, Types.VARCHAR, Types.VARCHAR
         );
     }
@@ -125,10 +128,21 @@ public class EmperorsDatabase {
         );
     }
 
-    public CompletableFuture<Settings> getGroupSettings(long groupId) {
+    public CompletableFuture<Map<String, Object>> getGroupSettings(long groupId) {
         return asyncDb.queryForObject(FETCH_SETTINGS, new Long[]{groupId}, (resultSet, rowNumber) -> {
-            int maxEmperorsPerUser = resultSet.getInt("maxEmperorsPerUser");
-            return new Settings(groupId, maxEmperorsPerUser);
+            Map<String, Object> map = new HashMap<>();
+
+            for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                String columnName = resultSet.getMetaData().getColumnName(i + 1);
+
+                Class<?> sqlType = SQLTypeMapping.toClass(resultSet.getMetaData().getColumnType(i + 1));
+
+                if (!columnName.equals("groupId")) {
+                    map.put(columnName, resultSet.getObject(columnName, sqlType));
+                }
+            }
+
+            return map;
         }, Types.BIGINT);
     }
 

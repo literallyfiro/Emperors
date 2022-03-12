@@ -1,9 +1,14 @@
 package me.onlyfire.emperors.bot.listener.impl;
 
 import lombok.SneakyThrows;
-import me.onlyfire.emperors.bot.*;
+import me.onlyfire.emperors.bot.Emperor;
+import me.onlyfire.emperors.bot.EmperorException;
+import me.onlyfire.emperors.bot.EmperorsBot;
+import me.onlyfire.emperors.bot.Language;
 import me.onlyfire.emperors.bot.database.EmperorsDatabase;
 import me.onlyfire.emperors.bot.listener.BotListener;
+import me.onlyfire.emperors.cooldown.Cooldown;
+import me.onlyfire.emperors.cooldown.CooldownManager;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -12,10 +17,13 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListener {
+
 
     @Override
     public void execute(Update update, AbsSender sender) {
@@ -25,6 +33,8 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
 
         Chat chat = message.getChat();
         User user = message.getFrom();
+
+        if (user.getIsBot()) return;
 
         if (!message.hasText()) return;
         if (emperorsBot.getUserMode().containsKey(user)) return;
@@ -64,7 +74,14 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
 
     @SneakyThrows
     public String takeEmperor(User user, Chat chat, Message message, Emperor emperor, List<Emperor> groupEmperors) {
-        Settings groupSettings = emperorsBot.getDatabase().getGroupSettings(chat.getId()).get();
+        Map<String, Object> groupSettings = emperorsBot.getDatabase().getGroupSettings(chat.getId()).get();
+        int maxEmperorsPerUser = (int) groupSettings.getOrDefault("maxEmperorsPerUser", 2);
+        int emperorCooldown = (int) groupSettings.getOrDefault("emperorCooldown", 10);
+
+        if (CooldownManager.getInstance().isInCooldown(user, chat)) {
+            Cooldown cooldown = CooldownManager.getInstance().getCooldown(user, chat);
+            return String.format(Language.IN_COOLDOWN.toString(), cooldown.getTimeRemaining());
+        }
 
         int same = 0;
 
@@ -74,13 +91,15 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
             }
         }
 
-        if (same >= groupSettings.getMaxEmperorsPerUser()) {
-            return String.format(Language.MAX_EMPERORS.toString(), same, groupSettings.getMaxEmperorsPerUser());
+        if (same >= maxEmperorsPerUser) {
+            return String.format(Language.MAX_EMPERORS.toString(), same, maxEmperorsPerUser);
         }
 
         emperorsBot.getDatabase().takeEmperor(user, chat, message.getText());
         String joining = "Set %s (Familiar name: %s) new emperor - %s - of group %s (Familiar name: %s).";
         emperorsBot.getLogger().info(String.format(joining, user.getId(), user.getUserName() != null ? user.getFirstName() + " | @" + user.getUserName() : user.getFirstName(), message.getText(), message.getChatId(), chat.getTitle()));
+
+        CooldownManager.getInstance().createCooldown(user, chat, emperorCooldown, TimeUnit.SECONDS);
 
         String photoUrl = "https://imgur.com/" + emperor.getPhotoId() + ".png";
         return String.format(Language.NEW_EMPEROR_OF_DAY.toString(), photoUrl, user.getFirstName(), emperor.getName());

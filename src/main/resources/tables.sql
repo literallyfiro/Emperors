@@ -14,5 +14,6 @@ CREATE TABLE IF NOT EXISTS `settings`
 (
     `groupId`               BIGINT      NOT NULL,
     `maxEmperorsPerUser`    INTEGER     DEFAULT 2,
+    `emperorCooldown`       INTEGER     DEFAULT 10,
     PRIMARY KEY (groupId)
 );

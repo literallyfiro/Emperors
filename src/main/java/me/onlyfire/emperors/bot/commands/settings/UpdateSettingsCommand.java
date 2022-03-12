@@ -31,8 +31,21 @@ public class UpdateSettingsCommand extends MessagedBotCommand {
         sendMessage.enableHtml(true);
         sendMessage.setChatId(String.valueOf(chat.getId()));
 
+        // TODO BETTER MESSAGES
         String key = strings[0];
-        int value = Integer.parseInt(strings[1]);
+
+        int value;
+        try {
+            value = Integer.parseInt(strings[1]);
+        } catch(NumberFormatException ex) {
+            sendMessage.setText("Valore non valido!");
+            try {
+                absSender.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
         emperorsBot.getDatabase().updateGroupSettings(chat.getId(), key, value).whenComplete((integer, throwable) -> {
             try {
