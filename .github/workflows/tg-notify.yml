@@ -1,0 +1,14 @@
+name: tg-notify
+on: [push, pull_request]
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update status
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          [${{ github.ref }}] New commit in ${{ github.repository }} - ${{ github.event.head_commit.message }} by "${{ github.actor }}". (${{github.sha}})
