@@ -47,7 +47,7 @@ public enum Language {
     MAX_EMPERORS(Emoji.HEAVY_MULTIPLICATION_X + " <b>Hai già conquistato %s imperatori!</b> Gli amministratori di questo gruppo hanno impostato un limite di %s imperatori per membro."),
     IN_COOLDOWN("<b>Sei in cooldown!</b> Aspetta %ss prima di conquistare un nuovo imperatore."),
     REMOVE_EMPEROR_FIRST_STEP("Rispondi a questo messaggio con il nome dell'imperatore che vuoi eliminare."),
-    ADDED_EMPEROR_SUCCESSFULLY(Emoji.PARTY + "\n\n" + "➥ Complimenti, l'imperatore <code>%s</code> è ora disponibile a tutti gli utenti!"),
+    ADDED_EMPEROR_SUCCESSFULLY(Emoji.PARTY + " ➥ Complimenti, l'imperatore <code>%s</code> è ora disponibile a tutti gli utenti!"),
     ALREADY_HAS_EMPEROR(Emoji.CRYING_FACE + " <b>Mi dispiace!</b> %s ha già preso il posto di re <code>%s</code>!"),
     ALREADY_HAS_EMPEROR_SELF("<b>Hey!</b> Hai già preso il posto di questo re, te ne sei dimenticato? " + Emoji.THINKING
             + "\nSe vuoi controllare la lista degli imperatori, digita /listemperors."),
