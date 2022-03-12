@@ -16,7 +16,7 @@ public enum Language {
             Gli amministratori del gruppo avranno il permesso di creare un imperatore (e di rimuoverlo), inserendo una foto e il suo identificativo (che gli utenti dovranno scrivere per diventare l'imperatore del giorno)
                                     
             ⚡️ <b>Quanti imperatori si possono aggiungere in un gruppo?</b>
-            La risposta è semplice. Infiniti
+            La risposta è semplice. Infiniti :P
             Sbizzarritevi a creare i vostri imperatori senza nessun tipo di limite!
                              
              
@@ -24,7 +24,7 @@ public enum Language {
             """),
 
     SETTINGS("""
-            ⚙️ <b>Impostazioni del gruppo %s</b>
+            ⚙️ <b>Impostazioni di Emperors per %s</b>
                         
             <i>Usa la tastiera per navigare tra le impostazioni</i>
             """),
@@ -35,10 +35,12 @@ public enum Language {
             """),
 
     ADD_EMPEROR_FIRST_STEP("""
-            <b>Perfetto</b>, adesso invia una foto (senza compressione di telegram) che identifica l'imperatore, con una didascalia contenente il suo nome (Gli utenti dovranno scrivere quel nome per diventare imperatori).
+            Adesso invia una foto (senza compressione di telegram) che identifica l'imperatore, con una didascalia contenente il suo nome.
+            Gli utenti dovranno scrivere quel nome per diventare imperatori.
+
             <b>Esempio: https://imgur.com/a/chawtDS</b>
 
-            Fai <code>/cancel</code> per annullare questa operazione
+            Digita /cancel per annullare la creazione.
             """
     ),
     GENERAL_ERROR("<b>Non è stato possibile eseguire la tua azione!</b> " + Emoji.CRYING_FACE +
@@ -53,9 +55,9 @@ public enum Language {
     /* Simple messages */
     NEW_EMPEROR_OF_DAY("<a href=\"%s\">&#8205</a>" + Emoji.PARTY + " ||• <b>Congratulazioni</b> %s •|| " +
             Emoji.PARTY + "\n\n" + "➥ Sei il nuovo imperatore <code>%s</code> di oggi!"),
-    MAX_EMPERORS(Emoji.RAILWAY_CAR + " Hai già conquistato %s imperatori! Il limite per utente è di %s imperatori."),
-    REMOVE_EMPEROR_FIRST_STEP("Rispondi a questo messaggio con il nome dell'imperatore che vuoi eliminare"),
-    ADDED_EMPEROR_SUCCESSFULLY("Complimenti, l'imperatore <code>%s</code> è ora disponibile a tutti gli utenti!"),
+    MAX_EMPERORS(Emoji.HEAVY_MULTIPLICATION_X + " Hai già conquistato %s imperatori! Gli amministratori di questo gruppo hanno impostato un limite di %s operatori per membro."),
+    REMOVE_EMPEROR_FIRST_STEP("Rispondi a questo messaggio con il nome dell'imperatore che vuoi eliminare."),
+    ADDED_EMPEROR_SUCCESSFULLY(Emoji.PARTY + "\n\n" + "➥ Complimenti, l'imperatore <code>%s</code> è ora disponibile a tutti gli utenti!"),
     ALREADY_HAS_EMPEROR(Emoji.CRYING_FACE + " <b>Mi dispiace!</b> %s ha già preso il posto di re <code>%s</code>!"),
     ALREADY_HAS_EMPEROR_SELF("<b>Hey!</b> Hai già preso il posto di questo re, te ne sei dimenticato? " + Emoji.THINKING
             + "\nSe vuoi controllare la lista degli imperatori, digita /listemperors."),
