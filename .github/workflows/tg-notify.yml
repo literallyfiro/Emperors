@@ -5,10 +5,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set output
+      id: vars
+      run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+    - name: Check output
+      run: echo ${{ steps.vars.outputs.short_ref }}
+      
     - name: Update status
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
-          [${{ github.ref }}] New commit in ${{ github.repository }} - ${{ github.event.head_commit.message }} by "${{ github.actor }}". (${{github.sha}})
+          🛠 <b>New Commit!</b> ${{ github.repository }}:${{ steps.vars.outputs.short_ref }} by "${{ github.actor }}"
+          
+          ${{ github.event.head_commit.message }} - <a href='https://github.com/${{ github.repository }}/commit/${{github.sha}}'>View changes</a>
