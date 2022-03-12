@@ -98,7 +98,8 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
             e.printStackTrace();
         }
 
-        logger.error(getStackTrace(throwable));
+        if (throwable.getCause() == null) logger.error(getStackTrace(throwable));
+        else logger.error(getStackTrace(throwable.getCause()));
     }
 
     private String getStackTrace(Throwable throwable) {
