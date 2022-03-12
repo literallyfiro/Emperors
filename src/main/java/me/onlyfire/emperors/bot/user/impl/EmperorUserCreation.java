@@ -82,7 +82,7 @@ public class EmperorUserCreation extends EmperorUserMode {
             sendMessage.setChatId(String.valueOf(chat.getId()));
             sendMessage.setText(Language.CREATION_IN_PROGRESS.toString());
             sender.execute(sendMessage);
-            
+
             File photo = downloadPhoto(updatedMessage, newEmperorName);
             this.uploadToImgur(photo, (photoId, throwable) -> {
                 if (throwable != null) {
@@ -92,8 +92,7 @@ public class EmperorUserCreation extends EmperorUserMode {
 
                 sendMessage.setText(String.format(Language.ADDED_EMPEROR_SUCCESSFULLY.toString(), newEmperorName));
 
-                CompletableFuture<Integer> processing = emperorsBot.getDatabase().createEmperor(chat, newEmperorName, photoId);
-                processing.whenComplete(((integer, exception) -> {
+                emperorsBot.getDatabase().createEmperor(chat, newEmperorName, photoId).whenComplete(((integer, exception) -> {
                     if (exception != null) {
                         emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante l'inserimento del record", exception));
                         return;
@@ -152,7 +151,7 @@ public class EmperorUserCreation extends EmperorUserMode {
     private String getImageData(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
         if (image == null) {
-            emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante la codifica del file"));
+            emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante la codifica del file", null));
             return "";
         }
         ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
