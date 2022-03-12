@@ -31,21 +31,18 @@ public class UpdateSettingsCommand extends MessagedBotCommand {
         sendMessage.enableHtml(true);
         sendMessage.setChatId(String.valueOf(chat.getId()));
 
-        // TODO BETTER MESSAGES
         String key = strings[0];
+        int value = toInt(strings[1], 1);
 
-        int value;
-        try {
-            value = Integer.parseInt(strings[1]);
-        } catch(NumberFormatException ex) {
-            sendMessage.setText("Valore non valido!");
+        if (value <= 0 || value > 300) {
+            sendMessage.setText("Devi selezionare un valore compreso tra 1 e 300!");
             try {
                 absSender.execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-            return;
         }
+
 
         emperorsBot.getDatabase().updateGroupSettings(chat.getId(), key, value).whenComplete((integer, throwable) -> {
             try {
@@ -61,6 +58,18 @@ public class UpdateSettingsCommand extends MessagedBotCommand {
                 e.printStackTrace();
             }
         });
+    }
+
+    public int toInt(String in, int def) {
+        if (in == null) {
+            return def;
+        } else {
+            try {
+                return Integer.parseInt(in);
+            } catch (NumberFormatException var3) {
+                return def;
+            }
+        }
     }
 
 }
