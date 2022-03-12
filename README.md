@@ -1,6 +1,6 @@
 # Emperors
 
-Inspired from @ReUnicoRebornBot concept and @RePaperaBot, Emperors is a new way to keep your group alive and active
+Inspired from @ReUnicoRebornBot concept and @RePaperaBot, Emperors is a new way to keep your group alive and active.
 
 ## 🎉 Create your own emperors
 
