@@ -32,13 +32,14 @@ public enum Language {
             Digita /cancel per annullare la creazione.
             """
     ),
-    GENERAL_ERROR("<b>Non è stato possibile eseguire la tua azione!</b> " + Emoji.CRYING_FACE +
-            "\n" +
-            "<i>Mi dispiace averti disturbato, ma c'è stato un problema tecnico nel bot! Molto probabilmente (anzi, sicuramente) questo errore è stato generato per via dell'incapacità dello sviluppatore nel controllare le exceptions in java.</i>\n" +
-            "\n\n" +
-            "<b>ERROR CODE:</b> <code>%s</code>" +
-            "\n" +
-            "<b>MESSAGE:</b> <code>%s</code>"
+
+    GENERAL_ERROR("""
+            <b>Non è stato possibile eseguire la tua azione!</b>
+            
+            <i>Mi dispiace averti disturbato, ma c'è stato un problema tecnico nel bot! Molto probabilmente (anzi, sicuramente) questo errore è stato generato per via dell'incapacità dello sviluppatore nel controllare le exceptions in java.</i>
+            
+            <b>ERROR CODE:</b> <code>%s</code>
+            <b>MESSAGE:</b> <code>%s</code>"""
     ),
 
     /* Simple messages */
