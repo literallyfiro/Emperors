@@ -23,17 +23,6 @@ public enum Language {
             ⚠️ <b>Nota, il bot è in uno stato chiamato BETA, ciò significa che non è la versione finale e ci potranno essere vari cambiamenti</b>
             """),
 
-    SETTINGS("""
-            ⚙️ <b>Impostazioni di Emperors per %s</b>
-                        
-            <i>Usa la tastiera per navigare tra le impostazioni</i>
-            """),
-
-    SETTINGS_SPECIFIC("""
-            <b>STATISTICHE:</b>
-             %s: %s
-            """),
-
     ADD_EMPEROR_FIRST_STEP("""
             Adesso invia una foto (senza compressione di telegram) che identifica l'imperatore, con una didascalia contenente il suo nome.
             Gli utenti dovranno scrivere quel nome per diventare imperatori.
