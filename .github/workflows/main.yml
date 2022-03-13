@@ -2,10 +2,25 @@ name: main
 on: [push, pull_request]
   
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # checkout full tree
+          fetch-depth: 0
+      - run: |
+          for commit in $(git rev-list ${{ github.event.before}}..${{ github.sha}}); do
+              git checkout $commit
+              echo "run test"
+          done
   main:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - uses: actions/setup-java@v2
       with:
         java-version: '17'
