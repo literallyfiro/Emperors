@@ -38,8 +38,8 @@ public class UpdateSettingsCommand extends MessagedBotCommand {
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
+            return;
         }
-
 
         emperorsBot.getDatabase().updateGroupSettings(chat.getId(), key, value).whenComplete((integer, throwable) -> {
             try {
