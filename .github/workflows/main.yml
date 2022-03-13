@@ -10,7 +10,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'adopt'
-        
+
     - name: Run Maven verify phase
       continue-on-error: true
       run: mvn --batch-mode --update-snapshots verify
@@ -26,9 +26,11 @@ jobs:
       uses: appleboy/telegram-action@master
       with:
         format: html
+        disable_web_page_preview: true
+        disable_notification: true
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
-          🛠 <b>New Commit!</b> ${{ github.repository }}:${{ steps.vars.outputs.short_ref }} by "${{ github.actor }}"
+          🛠 [<a href='https://github.com/${{ github.repository }}'>${{ github.repository }}</a> on branch <i>${{ steps.vars.outputs.short_ref }}</i>]
           
-          ${{ github.event.head_commit.message }} - <a href='https://github.com/${{ github.repository }}/commit/${{github.sha}}'>View changes</a>
+          ${{ github.event.commits[0].message }} by "${{ github.actor }}" - <a href='https://github.com/${{ github.repository }}/commit/${{github.sha}}'><b>View Changes</b></a>
