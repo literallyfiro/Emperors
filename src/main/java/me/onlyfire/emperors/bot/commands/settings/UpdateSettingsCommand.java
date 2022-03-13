@@ -46,7 +46,6 @@ public class UpdateSettingsCommand extends MessagedBotCommand {
                 if (throwable != null) {
                     sendMessage.setText("Controlla di aver scritto bene chiave e valore!");
                     absSender.execute(sendMessage);
-                    throwable.printStackTrace();
                     return;
                 }
                 sendMessage.setText("Aggiornato!");

@@ -35,7 +35,7 @@ public class AddEmperorCommand extends MessagedBotCommand {
 
         if (emperorsBot.getUserMode().containsKey(user)) {
             emperorsBot.removeUserMode(user, chat, null);
-            sendMessage.setText("Sei stato rimosso dalla precedente sessione di creazione.");
+            sendMessage.setText(Language.MODE_REMOVED.toString());
             try {
                 absSender.execute(sendMessage);
             } catch (TelegramApiException e) {

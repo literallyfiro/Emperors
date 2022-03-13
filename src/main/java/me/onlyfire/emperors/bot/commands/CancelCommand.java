@@ -1,6 +1,7 @@
 package me.onlyfire.emperors.bot.commands;
 
 import me.onlyfire.emperors.bot.EmperorsBot;
+import me.onlyfire.emperors.bot.Language;
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
 import me.onlyfire.emperors.bot.user.EmperorUserMode;
 import me.onlyfire.emperors.utils.MemberUtils;
@@ -39,8 +40,7 @@ public class CancelCommand extends MessagedBotCommand {
             SendMessage sendMessage = new SendMessage();
             sendMessage.enableHtml(true);
             sendMessage.setChatId(String.valueOf(chat.getId()));
-
-            sendMessage.setText("Rimosso dalla modalità corrente.");
+            sendMessage.setText(Language.MODE_REMOVED.toString());
 
             try {
                 absSender.executeAsync(sendMessage);

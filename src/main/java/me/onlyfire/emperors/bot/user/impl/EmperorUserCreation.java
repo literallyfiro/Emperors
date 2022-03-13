@@ -97,8 +97,7 @@ public class EmperorUserCreation extends EmperorUserMode {
                         emperorsBot.removeUserMode(user, chat, new EmperorException("Errore durante l'inserimento del record", exception));
                         return;
                     }
-                    String joining = "Created emperor %s on group %s (Familiar name: %s).";
-                    emperorsBot.getLogger().info(String.format(joining, newEmperorName, chat.getId(), chat.getTitle()));
+                    emperorsBot.getLogger().info(String.format(Language.CREATED_LOG.toString(), newEmperorName, chat.getId(), chat.getTitle()));
                     try {
                         sender.execute(sendMessage);
                     } catch (TelegramApiException e) {

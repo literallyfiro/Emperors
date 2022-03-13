@@ -36,8 +36,7 @@ public class RemoveEmperorCommand extends MessagedBotCommand {
             emperorsBot.removeUserMode(user, chat, null);
 
         if (strings.length == 0) {
-            sendMessage.setText("<b>Utilizzo corretto del comando: </b> <code>/removeemperor (nome re)</code>\n" +
-                    "Utilizza <code>/listemperors</code> per avere la lista degli imperatori disponibili");
+            sendMessage.setText(Language.REMOVE_EMPEROR_USAGE.toString());
             try {
                 absSender.execute(sendMessage);
             } catch (TelegramApiException e) {
@@ -66,8 +65,7 @@ public class RemoveEmperorCommand extends MessagedBotCommand {
 
             sendMessage.setText(String.format(Language.REMOVED_EMPEROR_SUCCESSFULLY.toString(), emperorName));
             database.deleteEmperor(emperorName, chat);
-            String joining = "Removed emperor %s on group %s (Familiar name: %s).";
-            emperorsBot.getLogger().info(String.format(joining, emperorName, chat.getId(), chat.getTitle()));
+            emperorsBot.getLogger().info(String.format(Language.REMOVED_LOG.toString(), emperorName, chat.getId(), chat.getTitle()));
 
             try {
                 absSender.execute(sendMessage);

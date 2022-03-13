@@ -42,12 +42,17 @@ public enum Language {
             <b>MESSAGE:</b> <code>%s</code>"""
     ),
 
+    REMOVE_EMPEROR_USAGE("""
+            <b>Utilizzo corretto del comando: </b><code>/removeemperor (nome)</code>
+            
+            Digita <code>/listemperors</code> per avere la lista degli imperatori disponibili
+            """),
+
     /* Simple messages */
     NEW_EMPEROR_OF_DAY("<a href=\"%s\">&#8205</a>" + Emoji.PARTY + " ||• <b>Congratulazioni</b> %s •|| " +
             Emoji.PARTY + "\n\n" + "➥ Sei il nuovo imperatore <code>%s</code> di oggi!"),
     MAX_EMPERORS(Emoji.HEAVY_MULTIPLICATION_X + " <b>Hai già conquistato %s imperatori!</b> Gli amministratori di questo gruppo hanno impostato un limite di %s imperatori per membro."),
     IN_COOLDOWN("<b>Sei in cooldown!</b> Aspetta %ss prima di conquistare un nuovo imperatore."),
-    REMOVE_EMPEROR_FIRST_STEP("Rispondi a questo messaggio con il nome dell'imperatore che vuoi eliminare."),
     ADDED_EMPEROR_SUCCESSFULLY(Emoji.PARTY + " ➥ Complimenti, l'imperatore <code>%s</code> è ora disponibile a tutti gli utenti!"),
     ALREADY_HAS_EMPEROR(Emoji.CRYING_FACE + " <b>Mi dispiace!</b> %s ha già preso il posto di re <code>%s</code>!"),
     ALREADY_HAS_EMPEROR_SELF("<b>Hey!</b> Hai già preso il posto di questo re, te ne sei dimenticato? " + Emoji.THINKING
@@ -55,8 +60,14 @@ public enum Language {
     CREATION_IN_PROGRESS(Emoji.TECHNOLOGIST + "Il tuo imperatore è ora in fase di creazione, questa operazione potrà richiedere qualche minuto."),
     ALREADY_EXIST_EMPEROR(Emoji.HEAVY_MULTIPLICATION_X + " Esiste già un imperatore con questo nome!"),
     REMOVED_EMPEROR_SUCCESSFULLY("L'imperatore <code>%s</code> è stato rimosso dal gruppo!"),
+
     THERE_ARE_NO_EMPERORS("<b>Non ci sono imperatori in questo gruppo!</b> " + Emoji.CRYING_FACE),
-    NOT_EXIST_EMPEROR(Emoji.HEAVY_MULTIPLICATION_X + " Non esiste un imperatore con questo nome!");
+    MODE_REMOVED("Sei stato rimosso dalla precedente sessione utente."),
+    NOT_EXIST_EMPEROR(Emoji.HEAVY_MULTIPLICATION_X + " Non esiste un imperatore con questo nome!"),
+
+    /* Logs */
+    REMOVED_LOG("Removed emperor %s on group %s (Familiar name: %s)"),
+    CREATED_LOG("Created emperor %s on group %s (Familiar name: %s)");
 
     final String s;
 
