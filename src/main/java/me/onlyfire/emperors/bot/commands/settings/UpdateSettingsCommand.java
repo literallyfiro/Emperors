@@ -1,10 +1,7 @@
 package me.onlyfire.emperors.bot.commands.settings;
 
-import me.onlyfire.emperors.bot.EmperorException;
 import me.onlyfire.emperors.bot.EmperorsBot;
-import me.onlyfire.emperors.bot.Settings;
 import me.onlyfire.emperors.bot.commands.api.MessagedBotCommand;
-import me.onlyfire.emperors.utils.Emoji;
 import me.onlyfire.emperors.utils.MemberUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
