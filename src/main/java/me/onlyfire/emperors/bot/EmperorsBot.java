@@ -45,6 +45,7 @@ public class EmperorsBot extends TelegramLongPollingCommandBot {
         ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutor.scheduleAtFixedRate(new EmperorClearTask(this), 0, 1, TimeUnit.SECONDS);
 
+        // test
         register(new AddEmperorCommand(this));
         register(new RemoveEmperorCommand(this));
         register(new CancelCommand(this));
