@@ -1,5 +1,8 @@
 name: main
-on: [push, pull_request]
+
+on: 
+  push:
+    branches: '**'
   
 jobs:
   build:
@@ -15,6 +18,7 @@ jobs:
               git checkout $commit
               echo "run test"
           done
+
   main:
     runs-on: ubuntu-latest
     steps:
