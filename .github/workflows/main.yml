@@ -13,7 +13,7 @@ jobs:
         
     - name: Run Maven verify phase
       continue-on-error: true
-      run: mvn --batch-mode --update-snapshot verify
+      run: mvn --batch-mode --update-snapshots verify
       
     - name: Set output
       id: vars
