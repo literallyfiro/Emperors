@@ -58,7 +58,7 @@ public class ListEmperorsCommand extends MessagedBotCommand {
         builder.append(Emoji.CROWN).append(" • ").append("<b>Imperatori presenti in</b> <code>")
                 .append(title).append("</code>").append("\n\n");
 
-        emperors.parallelStream()
+        emperors.stream()
                 .sorted(Comparator.comparing(Emperor::getTakenByName, Comparator.nullsFirst(Comparator.reverseOrder()))
                         .thenComparing(Emperor::getName))
                 .forEach(emp -> {
