@@ -18,9 +18,6 @@ public enum Language {
             ⚡️ <b>Quanti imperatori si possono aggiungere in un gruppo?</b>
             La risposta è semplice. Infiniti :P
             Sbizzarritevi a creare i vostri imperatori senza nessun tipo di limite!
-                             
-             
-            ⚠️ <b>Nota, il bot è in uno stato chiamato BETA, ciò significa che non è la versione finale e ci potranno essere vari cambiamenti</b>
             """),
 
     ADD_EMPEROR_FIRST_STEP("""

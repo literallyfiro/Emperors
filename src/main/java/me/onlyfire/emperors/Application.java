@@ -25,7 +25,7 @@ public class Application {
         }
 
         Logger logger = LoggerFactory.getLogger("EmperorsBot");
-        logger.info("Starting Emperors Bot [BETA] - By ImOnlyFire");
+        logger.info("Starting Emperors Bot - By ImOnlyFire");
         logger.info("Huge thanks to all of the MTG24 Team for making this project possible!");
 
         Properties props = loadProperties();
