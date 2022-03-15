@@ -63,7 +63,15 @@ public class ListEmperorsCommand extends MessagedBotCommand {
                         .thenComparing(Emperor::getName))
                 .forEach(emp -> {
                     String name = emp.getName().substring(0, 1).toUpperCase() + emp.getName().substring(1);
-                    builder.append("● ").append(emp.getTakenByName() != null ? "<strike>" + name + "</strike>" : name);
+
+                    builder.append("● ");
+
+                    if (emp.getTakenByName() != null) {
+                        builder.append("<strike>").append(name).append("</strike>").append(" [").append(emp.getTakenByName()).append("]");
+                    } else {
+                        builder.append(name);
+                    }
+
                     if (index.incrementAndGet() != emperors.size()) {
                         builder.append("\n");
                     }
