@@ -67,7 +67,7 @@ public class ListEmperorsCommand extends MessagedBotCommand {
                     builder.append("● ");
 
                     if (emp.getTakenByName() != null) {
-                        builder.append("<strike>").append(name).append("</strike>").append(" [").append(emp.getTakenByName()).append("]");
+                        builder.append("<strike>").append(name).append("</strike>").append(" [").append(formatName(emp.getTakenByName(), emp.getTakenById())).append("]");
                     } else {
                         builder.append(name);
                     }
@@ -78,5 +78,9 @@ public class ListEmperorsCommand extends MessagedBotCommand {
                 });
 
         return builder.toString();
+    }
+
+    private String formatName(String username, long userId) {
+        return String.format("<a href='tg://user?id=%s'>%s</a>", userId, username);
     }
 }
