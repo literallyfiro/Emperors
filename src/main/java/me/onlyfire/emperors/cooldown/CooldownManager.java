@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class CooldownManager {
 
     private static CooldownManager instance;
-    private final Map<User, Cooldown> inCooldown = new HashMap<>();
+    private final Map<Long, Cooldown> inCooldown = new HashMap<>();
 
     public static CooldownManager getInstance() {
         if (instance == null)
@@ -20,16 +20,16 @@ public class CooldownManager {
         return instance;
     }
 
-    public void createCooldown(User user, Chat chat, int time, TimeUnit unit) {
-        inCooldown.remove(user);
-        inCooldown.put(user, new Cooldown(user, chat, unit.toMillis(time)));
+    public void createCooldown(long userID, Chat chat, int time, TimeUnit unit) {
+        inCooldown.remove(userID);
+        inCooldown.put(userID, new Cooldown(userID, chat, unit.toMillis(time)));
     }
 
-    public void removeCooldown(User user, Chat chat) {
-        inCooldown.values().stream().filter(col -> Objects.equals(col.getChat(), chat)).forEach(col -> inCooldown.remove(user, col));
+    public void removeCooldown(long userID, Chat chat) {
+        inCooldown.values().stream().filter(col -> Objects.equals(col.getChat(), chat)).forEach(col -> inCooldown.remove(userID, col));
     }
 
-    public boolean isInCooldown(User user, Chat chat) {
+    public boolean isInCooldown(long user, Chat chat) {
         Cooldown cooldown = getCooldown(user, chat);
         if (cooldown == null) return false;
         if (cooldown.isExpired()) {
@@ -39,8 +39,8 @@ public class CooldownManager {
         return true;
     }
 
-    public Cooldown getCooldown(User user, Chat chat) {
+    public Cooldown getCooldown(long userID, Chat chat) {
         Optional<Cooldown> opt = inCooldown.values().stream().filter(col -> Objects.equals(col.getChat(), chat)).findFirst();
-        return opt.orElseGet(() -> inCooldown.get(user));
+        return opt.orElseGet(() -> inCooldown.get(userID));
     }
 }
