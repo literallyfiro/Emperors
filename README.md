@@ -18,7 +18,7 @@ here is a quick summary of the features of Emperors:
 
 **Required Dependencies:**
 
-* Java 7 (We don't support dinosaurs here)
+* Java 17 (We don't support dinosaurs here)
 * Maven
 * An Internet connection (Well, if you are reading this it means that you already have it 👀)
 * MySQL 3.8+ Installed
