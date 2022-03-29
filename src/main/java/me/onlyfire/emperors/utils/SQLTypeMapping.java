@@ -1,7 +1,10 @@
 package me.onlyfire.emperors.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.sql.Types;
 
+@UtilityClass
 public class SQLTypeMapping {
 
     /**
