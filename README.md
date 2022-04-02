@@ -28,8 +28,8 @@ and then build the project with `mvn clean install`. Your new jar is located at 
 
 ## ⭐ Creating a clone
 
-* First of all, you need to create a new bot from [@BotFather](https://t.me/botfather) - Make sure to disable privacy mode as well!
+* First, you need to create a new bot from [@BotFather](https://t.me/botfather) - Make sure to disable privacy mode as well!
 * Then, you need an imgur api token. To get it, follow this link from the [Imgur Docs](https://apidocs.imgur.com/#authorization-and-oauth).
 * And finally, you need a mysql database connection available.
 
-Finally go to the `config.properties` file and fill in with the bot token, bot username, database credentials and imgur token
+Finally, go to the `config.properties` file and fill in with the bot token, bot username, database credentials and imgur token
