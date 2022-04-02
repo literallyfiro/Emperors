@@ -1,7 +1,6 @@
 package me.onlyfire.emperors.cooldown;
 
 import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +22,6 @@ public class CooldownManager {
     public void createCooldown(long userID, Chat chat, int time, TimeUnit unit) {
         inCooldown.remove(userID);
         inCooldown.put(userID, new Cooldown(userID, chat, unit.toMillis(time)));
-    }
-
-    public void removeCooldown(long userID, Chat chat) {
-        inCooldown.values().stream().filter(col -> Objects.equals(col.getChat(), chat)).forEach(col -> inCooldown.remove(userID, col));
     }
 
     public boolean isInCooldown(long user, Chat chat) {

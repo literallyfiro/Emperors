@@ -49,11 +49,15 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
         try {
             List<Emperor> emperors = database.getEmperors(message.getChatId()).get();
             for (Emperor emperor : emperors) {
-                if (emperor.getName().equals(message.getText().toLowerCase())) {
-                    if (emperor.getTakenByName() == null || emperor.getTakenTime() == 0L) {
+                if (emperor.name().equals(message.getText().toLowerCase())) {
+                    if (emperor.takenByName() == null || emperor.takenTime() == 0L) {
                         sendMessage.setText(takeEmperor(user, chat, message, emperor, emperors));
                     } else {
-                        sendMessage.setText(emperor.getTakenById() == user.getId() ? Language.ALREADY_HAS_EMPEROR_SELF.toString() : String.format(Language.ALREADY_HAS_EMPEROR.toString(), emperor.getTakenByName(), emperor.getName()));
+                        if (emperor.takenById() == user.getId()) {
+                            sendMessage.setText(Language.ALREADY_HAS_EMPEROR_SELF.toString());
+                        } else {
+                            sendMessage.setText(String.format(Language.ALREADY_HAS_EMPEROR.toString(), emperor.takenByName(), emperor.name()));
+                        }
                     }
 
                     try {
@@ -84,7 +88,7 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
         int same = 0;
 
         for (Emperor groupEmperor : groupEmperors) {
-            if (groupEmperor.getTakenById() == user.getId()) {
+            if (groupEmperor.takenById() == user.getId()) {
                 same++;
             }
         }
@@ -99,7 +103,7 @@ public record UserEmperorListener(EmperorsBot emperorsBot) implements BotListene
 
         CooldownManager.getInstance().createCooldown(user.getId(), chat, emperorCooldown, TimeUnit.SECONDS);
 
-        String photoUrl = "https://imgur.com/" + emperor.getPhotoId() + ".png";
-        return String.format(Language.NEW_EMPEROR_OF_DAY.toString(), photoUrl, user.getFirstName(), emperor.getName());
+        String photoUrl = "https://imgur.com/" + emperor.photoId() + ".png";
+        return String.format(Language.NEW_EMPEROR_OF_DAY.toString(), photoUrl, user.getFirstName(), emperor.name());
     }
 }

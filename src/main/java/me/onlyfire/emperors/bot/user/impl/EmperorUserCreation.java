@@ -1,7 +1,7 @@
 package me.onlyfire.emperors.bot.user.impl;
 
-import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.EmperorException;
+import me.onlyfire.emperors.bot.EmperorsBot;
 import me.onlyfire.emperors.bot.Language;
 import me.onlyfire.emperors.bot.user.EmperorUserMode;
 import me.onlyfire.emperors.utils.Downloader;
@@ -28,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class EmperorUserCreation extends EmperorUserMode {

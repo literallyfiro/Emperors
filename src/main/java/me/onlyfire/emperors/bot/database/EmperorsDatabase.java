@@ -173,7 +173,7 @@ public class EmperorsDatabase {
     public void emitEmperor(Emperor emperor) {
         asyncDb.update(
                 UPDATE_EMPEROR,
-                new Object[]{0L, null, 0L, emperor.getGroupId(), emperor.getName()},
+                new Object[]{0L, null, 0L, emperor.groupId(), emperor.name()},
                 true,
                 Types.BIGINT, Types.NULL, Types.BIGINT, Types.BIGINT, Types.VARCHAR
         ).whenComplete((integer, exception) -> {

@@ -59,15 +59,15 @@ public class ListEmperorsCommand extends MessagedBotCommand {
                 .append(title).append("</code>").append("\n\n");
 
         emperors.stream()
-                .sorted(Comparator.comparing(Emperor::getTakenByName, Comparator.nullsFirst(Comparator.reverseOrder()))
-                        .thenComparing(Emperor::getName))
+                .sorted(Comparator.comparing(Emperor::takenByName, Comparator.nullsFirst(Comparator.reverseOrder()))
+                        .thenComparing(Emperor::name))
                 .forEach(emp -> {
-                    String name = emp.getName().substring(0, 1).toUpperCase() + emp.getName().substring(1);
+                    String name = emp.name().substring(0, 1).toUpperCase() + emp.name().substring(1);
 
                     builder.append("● ");
 
-                    if (emp.getTakenByName() != null) {
-                        builder.append("<strike>").append(name).append("</strike>").append(" [").append(emp.getTakenByName()).append("]");
+                    if (emp.takenByName() != null) {
+                        builder.append("<strike>").append(name).append("</strike>").append(" [").append(emp.takenByName()).append("]");
                     } else {
                         builder.append(name);
                     }

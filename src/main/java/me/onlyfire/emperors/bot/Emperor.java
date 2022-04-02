@@ -1,15 +1,35 @@
 package me.onlyfire.emperors.bot;
 
-import lombok.Data;
 
-@Data
-public class Emperor {
+public record Emperor(long groupId, String name, String photoId, long takenById, String takenByName, long takenTime) {
 
-    private final long groupId;
-    private final String name;
-    private final String photoId;
-    private final long takenById;
-    private final String takenByName;
-    private final long takenTime;
+    @Override
+    public long groupId() {
+        return groupId;
+    }
 
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public String photoId() {
+        return photoId;
+    }
+
+    @Override
+    public long takenById() {
+        return takenById;
+    }
+
+    @Override
+    public String takenByName() {
+        return takenByName;
+    }
+
+    @Override
+    public long takenTime() {
+        return takenTime;
+    }
 }

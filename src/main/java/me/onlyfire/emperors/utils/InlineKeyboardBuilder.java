@@ -1,7 +1,6 @@
 package me.onlyfire.emperors.utils;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -11,7 +10,6 @@ import java.util.List;
 public class InlineKeyboardBuilder {
 
     private final List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-    private int messageId;
     private Long chatId;
     private String text;
     private List<InlineKeyboardButton> row = null;
@@ -27,11 +25,6 @@ public class InlineKeyboardBuilder {
 
     public InlineKeyboardBuilder setText(String text) {
         this.text = text;
-        return this;
-    }
-
-    public InlineKeyboardBuilder setMessageId(int id) {
-        this.messageId = id;
         return this;
     }
 
@@ -65,22 +58,6 @@ public class InlineKeyboardBuilder {
     public SendMessage build() {
         SendMessage message = new SendMessage();
 
-        message.setChatId(String.valueOf(chatId));
-        message.enableHtml(true);
-        message.setText(text);
-
-        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-
-        keyboardMarkup.setKeyboard(keyboard);
-        message.setReplyMarkup(keyboardMarkup);
-
-        return message;
-    }
-
-    public EditMessageText buildEditMessage() {
-        EditMessageText message = new EditMessageText();
-
-        message.setMessageId(messageId);
         message.setChatId(String.valueOf(chatId));
         message.enableHtml(true);
         message.setText(text);

@@ -9,7 +9,7 @@ public record EmperorClearTask(EmperorsBot emperorsBot) implements Runnable {
         EmperorsDatabase database = emperorsBot.getDatabase();
         database.getEmperors().whenComplete((emperors, throwable) -> {
             for (Emperor emperor : emperors) {
-                if (emperor.getTakenTime() < (System.currentTimeMillis() / 1000)) {
+                if (emperor.takenTime() < (System.currentTimeMillis() / 1000)) {
                     database.emitEmperor(emperor);
                 }
             }
