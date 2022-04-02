@@ -1,9 +1,7 @@
 name: main
 
-on: 
-  push:
-    branches: '**'
-  
+on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
